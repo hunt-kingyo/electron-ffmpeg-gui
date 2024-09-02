@@ -6,7 +6,7 @@ const createWindow = () => {
   const mainWindow = new BrowserWindow({
     width: 600,
     height: 400,
-    title: 'マイアプリ',
+    title: 'FFmpegGUI',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
