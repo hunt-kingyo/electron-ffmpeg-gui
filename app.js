@@ -27,4 +27,7 @@ multiImporButton.addEventListener('click', async () => {
 
 encodeButton.addEventListener('click', () => {
     window.myAPI.startFfmpeg();
+    window.myAPI.ffmpegLog((message) => {
+        ffmpegLog.innerText = message;
+    });
 })

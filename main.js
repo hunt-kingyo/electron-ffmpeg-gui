@@ -64,14 +64,17 @@ const createWindow = () => {
       .videoCodec(videoCodec)
       .on('progress', function(progress) {
         console.log('Processing: ' + progress.percent + '% done');
+        mainWindow.webContents.send('ffmpeg-log', 'Processing: ' + progress.percent + '% done');
       })
       .on('error', function(err) {
         console.log('An error occurred: ' + err.message);
-        result = ' : error';
+        mainWindow.webContents.send('ffmpeg-log', 'An error occurred: ' + err.message);
+        //エラー文をどこかに送るなら
+        //mainWindow.webContents.send('ffmpeg-log', 'An error occurred: ' + err.message);
       })
       .on('end', function() {
         console.log('Processing finished !');
-        result = ' : done';
+        mainWindow.webContents.send('ffmpeg-log', 'Processing finished !');
       })
       .save(outputFilePath)
   })
