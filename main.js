@@ -59,7 +59,7 @@ const createWindow = () => {
       .catch((err) => console.error(err));
   });
 
-  ipcMain.handle('start-ffmpeg', async (_e, _arg) => {
+  ipcMain.on('start-ffmpeg', async (_e, _arg) => {
     ffmpeg(inputFilePath)
       .videoCodec(videoCodec)
       .on('progress', function(progress) {
@@ -67,12 +67,13 @@ const createWindow = () => {
       })
       .on('error', function(err) {
         console.log('An error occurred: ' + err.message);
+        result = ' : error';
       })
       .on('end', function() {
         console.log('Processing finished !');
+        result = ' : done';
       })
       .save(outputFilePath)
-    return 'Processing finished!'
   })
 
   mainWindow.webContents.openDevTools({ mode: 'detach' });
