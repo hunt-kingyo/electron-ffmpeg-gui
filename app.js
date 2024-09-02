@@ -1,14 +1,20 @@
 console.log('Hello, world.');
 const button = document.getElementById('button');
 const text = document.getElementById('text');
+
 const list = document.getElementById('list');
 const multiImporButton = document.getElementById('multiImportButton');
+
+const encodeButton = document.getElementById('encodeButton');
+const ffmpegLog = document.getElementById('ffmpegLog');
+
 //ここで宣言しないとボタンを押すたびにカウントがリセットされてしまう
 let count = 0;
 
 button.addEventListener('click', async () => {
     text.textContent = await window.myAPI.openDialog();
 });
+
 multiImporButton.addEventListener('click', async () => {
     const filelist = await window.myAPI.multiOpenDialog();
     filelist.forEach(filepath => {
@@ -17,4 +23,8 @@ multiImporButton.addEventListener('click', async () => {
         //\nを扱えるのはinnerTextだけで、textContentは<br>を挿入すれば動く
         list.innerText = list.innerText + String(count) + '. ' + filepath + '\n'
     });
+})
+
+encodeButton.addEventListener('click', async () => {
+    ffmpegLog.innerText = await window.myAPI.startFfmpeg();
 })
