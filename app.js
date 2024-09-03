@@ -5,6 +5,8 @@ const text = document.getElementById('text');
 const inputlist = document.getElementById('inputList');
 const multiImporButton = document.getElementById('multiImportButton');
 
+const codecSelect = document.getElementById('codecSelect');
+
 const outputButton = document.getElementById('outputButton');
 const outputFolder = document.getElementById('outputFolder');
 
@@ -26,6 +28,10 @@ multiImporButton.addEventListener('click', async () => {
         //\nを扱えるのはinnerTextだけで、textContentは<br>を挿入すれば動く
         inputlist.innerText = inputlist.innerText + String(count) + '. ' + filepath + '\n'
     });
+})
+
+codecSelect.addEventListener('change', (e) => {
+    window.myAPI.selectCodec(e.target.value);
 })
 
 outputButton.addEventListener('click', async () => {

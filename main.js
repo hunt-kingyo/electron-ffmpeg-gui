@@ -66,6 +66,10 @@ const createWindow = () => {
       .catch((err) => console.error(err));
   });
 
+  ipcMain.on('select-codec', async(_e, codec) => {
+    videoCodec = codec;
+  })
+
   ipcMain.handle('open-output-dialog', async(_e, _arg) => {
     return dialog
     .showOpenDialog(mainWindow, {
@@ -78,6 +82,12 @@ const createWindow = () => {
       //outputFilePathの値を更新
       outputFilePath = path.join(outputFolder, path.basename(inputFilePath, path.extname(inputFilePath))) + container
 ;
+      //consoleにいろいろ出力
+      console.log(`--selected option--\n\
+        inputFilePath: ${inputFilePath}\n\
+        videoCodec: ${videoCodec}\n\
+        outputFilePath: ${outputFilePath}\n`);
+
       return outputFilePath;
     })
     .catch((err) => console.error(err));

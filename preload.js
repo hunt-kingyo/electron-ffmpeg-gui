@@ -5,6 +5,7 @@ contextBridge.exposeInMainWorld('myAPI', {
     openMultipleDialog: () => ipcRenderer.invoke('open-multiple-dialog'),
     openOutputDialog: () => ipcRenderer.invoke('open-output-dialog'),
     //同期処理
+    selectCodec: (codec) => ipcRenderer.send('select-codec', codec),
     startFfmpeg: () => ipcRenderer.send('start-ffmpeg'),
     ffmpegLog: (callback) => ipcRenderer.on('ffmpeg-log', (_event, message) => {
         callback(message);

@@ -14,6 +14,21 @@
     <button id="multiImportButton">Select multiple files</button>
     <p id="inputList"></p>
 
+    <select id="codecSelect">
+      <option value="">--Select codec--</option>
+      <option value="h264_nvenc">NVIDIA NVENC H.264</option>
+      <option value="hevc_nvenc">NVIDIA NVENC H.265</option>
+      <option value="av1_nvenc">NVIDIA NVENC av1</option>
+      <option value="libx264">H.264</option>
+      <option value="libx265">H.265</option>
+      <option value="ilbvpx-vp9">libvpx VP9</option>
+      <option value="libaom-av1">libaom AV1</option>
+      <option value="dnxhd">DNxHD</option>
+      <option value="cfhd">GoPro CineForm HD</option>
+      <option value="prores_ks">Apple ProRes(iCodec Pro)</option>
+
+    </select><br>
+
     <button id="outputButton">Select output folder</button>
     <p id="outputFolder"></p>
 
