@@ -5,15 +5,15 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-packager . --overwrite"
+    "build": "npx @electron/packager . --overwrite --extra-resource=node_modules/ffmpeg-static/ffmpeg.exe"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "electron": "^32.0.1",
-    "electron-builder": "^24.13.3"
+    "@electron/packager": "github:electron/packager",
+    "electron": "^32.0.1"
   },
   "dependencies": {
     "ffmpeg-static": "^5.2.0",
