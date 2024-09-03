@@ -16,13 +16,15 @@ const createWindow = () => {
   let inputFilePath = '';
   //入力ファイルのリスト
   let inputFileList = [];
+  let outputFolder = '';
   let videoCodec = 'libx264';
   let options = '';
   let bitrate = '';
-  let container = '';
-  let outputFilePath = 'C:/Users/BO-hu/Downloads/testoutput.mp4';
+  //containerは拡張子が入る予定だが、ffmpegで指定できるフォーマットの名前が拡張子と一致しているか確認する必要がある
+  let container = 'mov';
+  let outputFilePath = outputFolder + '\\' + path.basename(inputFilePath, path.extname(inputFilePath) + '.' + container);
 
-  ipcMain.handle('multi-open-dialog', async (_e, _arg) => {
+  ipcMain.handle('open-multiple-dialog', async (_e, _arg) => {
     return dialog
       // ファイル選択ダイアログを表示する
       .showOpenDialog(mainWindow, {
@@ -59,9 +61,27 @@ const createWindow = () => {
       .catch((err) => console.error(err));
   });
 
+  ipcMain.handle('open-output-dialog', async(_e, _arg) => {
+    return dialog
+    .showOpenDialog(mainWindow, {
+      properties: ['openDirectory'],
+    })
+    .then((result) => {
+      if (result.canceled) return '';
+
+      outputFolder = result.filePaths[0];
+      let outputFilePath = outputFolder + '\\' + path.basename(inputFilePath, path.extname(inputFilePath) + '.' + container);
+      return outputFilePath
+    })
+    .catch((err) => console.error(err));
+  });
+
   ipcMain.on('start-ffmpeg', async (_e, _arg) => {
     ffmpeg(inputFilePath)
       .videoCodec(videoCodec)
+      //containerでよいか要確認
+      //ここで指定する必要がない可能性もある
+      .format(container)
       .on('progress', function(progress) {
         console.log('Processing: ' + progress.percent + '% done');
         mainWindow.webContents.send('ffmpeg-log', 'Processing: ' + progress.percent + '% done');
