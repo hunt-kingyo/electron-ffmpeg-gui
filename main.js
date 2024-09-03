@@ -2,6 +2,8 @@ const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
 
+ffmpeg.setFfmpegPath(require('ffmpeg-static'));
+
 const createWindow = () => {
   const mainWindow = new BrowserWindow({
     width: 600,
