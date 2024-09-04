@@ -6,8 +6,12 @@ contextBridge.exposeInMainWorld('myAPI', {
     openOutputDialog: () => ipcRenderer.invoke('open-output-dialog'),
     //同期処理
     selectCodec: (codec) => ipcRenderer.send('select-codec', codec),
+    selectSuffix: (suffix) => ipcRenderer.send('select-suffix', suffix),
     startFfmpeg: () => ipcRenderer.send('start-ffmpeg'),
+    checkFilePath: (callback) => ipcRenderer.on('check-file-path', (_event, message) => {
+        callback(message);
+    }),
     ffmpegLog: (callback) => ipcRenderer.on('ffmpeg-log', (_event, message) => {
         callback(message);
     }),
-});
+}); 

@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
+const fs = require('fs')
 
 ffmpeg.setFfmpegPath(require('ffmpeg-static'));
 
@@ -20,6 +21,8 @@ const createWindow = () => {
   let inputFileList = [];
   let outputFolder = '';
   let videoCodec = 'libx264';
+  let checkOutput = false;
+  let suffix = '';
   let options = '';
   let bitrate = '';
   //containerは拡張子が入る
@@ -61,6 +64,11 @@ const createWindow = () => {
 
         inputFilePath = result.filePaths[0];
         // 選択されたファイルの絶対パスを返す
+        mainWindow.webContents.send('check-file-path', `--selected option--\n\
+          inputFilePath: ${inputFilePath}\n\
+          videoCodec: ${videoCodec}\n\
+          suffix: ${suffix}\n\
+          outputFilePath: ${outputFilePath}\n`)
         return result.filePaths[0];
       })
       .catch((err) => console.error(err));
@@ -68,7 +76,30 @@ const createWindow = () => {
 
   ipcMain.on('select-codec', async(_e, codec) => {
     videoCodec = codec;
-  })
+    mainWindow.webContents.send('check-file-path', `--selected option--\n\
+      inputFilePath: ${inputFilePath}\n\
+      videoCodec: ${videoCodec}\n\
+      suffix: ${suffix}\n\
+      outputFilePath: ${outputFilePath}\n`);
+  });
+
+  ipcMain.on('select-suffix', async(_e, suffixSelected) =>{
+    suffix = suffixSelected;
+    if (checkOutput === true) {
+      //outputFilePathの値を更新
+      outputFilePath = path.join(outputFolder, path.basename(inputFilePath, path.extname(inputFilePath)))+ suffix + container;
+      if (fs.existsSync(outputFilePath)){
+        mainWindow.webContents.send('check-file-path', `file already exists: ${outputFilePath}\n\
+          select suffix, or other output folder.\n`)
+      } else {
+        mainWindow.webContents.send('check-file-path', `--selected option--\n\
+        inputFilePath: ${inputFilePath}\n\
+        videoCodec: ${videoCodec}\n\
+        suffix: ${suffix}\n\
+        outputFilePath: ${outputFilePath}\n`)
+      }
+    };
+  });
 
   ipcMain.handle('open-output-dialog', async(_e, _arg) => {
     return dialog
@@ -80,23 +111,29 @@ const createWindow = () => {
 
       outputFolder = result.filePaths[0];
       //outputFilePathの値を更新
-      outputFilePath = path.join(outputFolder, path.basename(inputFilePath, path.extname(inputFilePath))) + container
-;
-      //consoleにいろいろ出力
-      console.log(`--selected option--\n\
+      outputFilePath = path.join(outputFolder, path.basename(inputFilePath, path.extname(inputFilePath)))+ suffix + container;
+
+      checkOutput = true;
+      
+      if (fs.existsSync(outputFilePath)){
+        mainWindow.webContents.send('check-file-path', `file already exists: ${outputFilePath}\n\
+          select suffix, or other output folder.\n`);
+        return outputFilePath;
+      } else {
+        mainWindow.webContents.send('check-file-path', `--selected option--\n\
         inputFilePath: ${inputFilePath}\n\
         videoCodec: ${videoCodec}\n\
+        suffix: ${suffix}\n\
         outputFilePath: ${outputFilePath}\n`);
-
-      return outputFilePath;
+        return outputFilePath;
+      }
     })
     .catch((err) => console.error(err));
   });
 
   ipcMain.on('start-ffmpeg', async (_e, _arg) => {
     //値を更新
-    outputFilePath = path.join(outputFolder, path.basename(inputFilePath, path.extname(inputFilePath))) + container
-;
+    outputFilePath = path.join(outputFolder, path.basename(inputFilePath, path.extname(inputFilePath)))+ suffix + container;
     ffmpeg(inputFilePath)
       .videoCodec(videoCodec)
       //やるならcontainerではなく別の変数に変更
@@ -116,7 +153,7 @@ const createWindow = () => {
         mainWindow.webContents.send('ffmpeg-log', 'Processing finished !');
       })
       .save(outputFilePath)
-  })
+  });
 
   mainWindow.webContents.openDevTools({ mode: 'detach' });
   mainWindow.loadFile('index.html');

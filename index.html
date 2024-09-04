@@ -23,14 +23,24 @@
       <option value="libx265">H.265</option>
       <option value="ilbvpx-vp9">libvpx VP9</option>
       <option value="libaom-av1">libaom AV1</option>
-      <option value="dnxhd">DNxHD</option>
+      <option value="dnxhd">DNxHR</option>
       <option value="cfhd">GoPro CineForm HD</option>
       <option value="prores_ks">Apple ProRes(iCodec Pro)</option>
 
     </select><br>
 
+    <select id="suffixSelect">
+      <option value="">(none)</option>
+      <option value="_codec">_codec</option>
+      <option value="_bitrate">_bitrate</option>
+      <option value="_converted">_converted</option>
+      <option value="_FFmpegGUI">_FFmpegGUI</option>
+    </select><br>
+
     <button id="outputButton">Select output folder</button>
     <p id="outputFolder"></p>
+
+    <p id="checkFilePath"></p>
 
     <button id="encodeButton">Encode</button>
     <p id="ffmpegLog"></p>

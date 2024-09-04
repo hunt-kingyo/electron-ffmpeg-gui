@@ -7,8 +7,12 @@ const multiImporButton = document.getElementById('multiImportButton');
 
 const codecSelect = document.getElementById('codecSelect');
 
+const suffixSelect = document.getElementById('suffixSelect');
+
 const outputButton = document.getElementById('outputButton');
 const outputFolder = document.getElementById('outputFolder');
+
+const checkFilePath = document.getElementById('checkFilePath');
 
 const encodeButton = document.getElementById('encodeButton');
 const ffmpegLog = document.getElementById('ffmpegLog');
@@ -34,6 +38,10 @@ codecSelect.addEventListener('change', (e) => {
     window.myAPI.selectCodec(e.target.value);
 })
 
+suffixSelect.addEventListener('change', (e) => {
+    window.myAPI.selectSuffix(e.target.value);
+})
+
 outputButton.addEventListener('click', async () => {
     outputFolder.textContent = await window.myAPI.openOutputDialog()
 })
@@ -43,4 +51,8 @@ encodeButton.addEventListener('click', () => {
     window.myAPI.ffmpegLog((message) => {
         ffmpegLog.innerText = message;
     });
+})
+
+window.myAPI.checkFilePath((message) => {
+    checkFilePath.innerText = message;
 })
