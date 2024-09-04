@@ -19,13 +19,15 @@ if (process.contextIsolated) {
       selectCodec: (codec: string) => ipcRenderer.send('select-codec', codec),
       selectSuffix: (suffix: string) => ipcRenderer.send('select-suffix', suffix),
       startFfmpeg: () => ipcRenderer.send('start-ffmpeg'),
-      checkFilePath: (callback) => ipcRenderer.on('check-file-path', (_event, message: string) => {
-          callback(message);
-      }),
-      ffmpegLog: (callback) => ipcRenderer.on('ffmpeg-log', (_event, message: string) => {
-          callback(message);
-      }),
-  }); 
+      checkFilePath: (callback) =>
+        ipcRenderer.on('check-file-path', (_event, message: string) => {
+          callback(message)
+        }),
+      ffmpegLog: (callback) =>
+        ipcRenderer.on('ffmpeg-log', (_event, message: string) => {
+          callback(message)
+        })
+    })
   } catch (error) {
     console.error(error)
   }
