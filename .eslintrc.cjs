@@ -5,5 +5,10 @@ module.exports = {
     'plugin:react/jsx-runtime',
     '@electron-toolkit/eslint-config-ts/recommended',
     '@electron-toolkit/eslint-config-prettier'
-  ]
+  ],
+  "rules": {
+  "react/jsx-uses-react": "off",
+  "react/react-in-jsx-scope": "off"
+}
+
 }

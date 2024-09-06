@@ -2,10 +2,11 @@ import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join, basename, extname } from 'path'
 import { existsSync } from 'fs'
 import ffmpeg from 'fluent-ffmpeg'
+import ffmpegStatic from 'ffmpeg-static'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
-ffmpeg.setFfmpegPath(require('ffmpeg-static'))
+ffmpeg.setFfmpegPath(ffmpegStatic)
 
 function createWindow(): void {
   // Create the browser window.
@@ -28,8 +29,8 @@ function createWindow(): void {
   let outputFolder: string = ''
   let videoCodec: string = 'libx264'
   let suffix: string = ''
-  const options: string = ''
-  const bitrate: string = ''
+  //const options: string = ''
+  //const bitrate: string = ''
   //containerは拡張子が入る
   //ffmpegで指定する必要があるなら別の変数にする
   const container = '.mov'
@@ -37,7 +38,7 @@ function createWindow(): void {
   //ラッパーオブジェクトも考えたがうまく機能しなかった
   let outputFilePath = ''
 
-  ipcMain.handle('open-multiple-dialog', async (_e, _arg) => {
+  ipcMain.handle('open-multiple-dialog', async () => {
     return (
       dialog
         // ファイル選択ダイアログを表示する
@@ -59,7 +60,7 @@ function createWindow(): void {
     )
   })
 
-  ipcMain.handle('open-dialog', async (_e, _arg: void) => {
+  ipcMain.handle('open-dialog', async () => {
     return (
       dialog
         // ファイル選択ダイアログを表示する
@@ -87,7 +88,7 @@ function createWindow(): void {
     suffix = suffixSelected
   })
 
-  ipcMain.handle('open-output-dialog', async (_e, _arg) => {
+  ipcMain.handle('open-output-dialog', async () => {
     return dialog
       .showOpenDialog(mainWindow, {
         properties: ['openDirectory']
@@ -101,7 +102,7 @@ function createWindow(): void {
       .catch((err) => console.error(err))
   })
 
-  ipcMain.on('start-ffmpeg', async (_e, _arg: void) => {
+  ipcMain.on('start-ffmpeg', async () => {
     //値を更新
     outputFilePath =
       join(outputFolder, basename(inputFilePath, extname(inputFilePath))) + suffix + container

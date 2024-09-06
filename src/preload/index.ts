@@ -15,7 +15,6 @@ if (process.contextIsolated) {
       openDialog: () => ipcRenderer.invoke('open-dialog'),
       openMultipleDialog: () => ipcRenderer.invoke('open-multiple-dialog'),
       openOutputDialog: () => ipcRenderer.invoke('open-output-dialog'),
-      //同期処理
       selectCodec: (codec: string) => ipcRenderer.send('select-codec', codec),
       selectSuffix: (suffix: string) => ipcRenderer.send('select-suffix', suffix),
       startFfmpeg: () => ipcRenderer.send('start-ffmpeg'),
@@ -32,8 +31,8 @@ if (process.contextIsolated) {
     console.error(error)
   }
 } else {
-  // @ts-ignore (define in dts)
+  // @ts-expect-error (define in dts)
   window.electron = electronAPI
-  // @ts-ignore (define in dts)
+  // @ts-expect-error (define in dts)
   window.api = api
 }
