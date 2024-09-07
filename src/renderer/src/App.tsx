@@ -1,4 +1,3 @@
-/* eslint-disable react/react-in-jsx-scope */
 import Versions from './components/Versions'
 import electronLogo from './assets/electron.svg'
 import React from 'react';
@@ -6,7 +5,7 @@ import React from 'react';
 function App(): JSX.Element {
   const [inputFilePath, setInputFile] = React.useState('');
   const [inputFileList, setInputList] = React.useState([]);
-  const inputListMap = inputFileList.map(input => <li>{input}</li>)
+  const inputListMap = inputFileList.map(filePath => <li key={filePath}>{filePath}</li>)
   const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
   const importButton = async () => {
     console.log('button clicked!')
