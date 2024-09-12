@@ -1,17 +1,13 @@
 import Versions from './components/Versions'
 import electronLogo from './assets/electron.svg'
-import React from 'react';
+import React from 'react'
+import ImportButton from './components/ImportButton'
 
 function App(): JSX.Element {
-  const [inputFilePath, setInputFile] = React.useState('');
-  const [inputFileList, setInputList] = React.useState([]);
-  const inputListMap = inputFileList.map(filePath => <li key={filePath}>{filePath}</li>)
+  const [inputFilePath, setInputFile] = React.useState<string>('')
+  const [inputFileList, setInputList] = React.useState([])
+  const inputListMap = inputFileList.map((filePath) => <li key={filePath}>{filePath}</li>)
   const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
-  const importButton = async () => {
-    console.log('button clicked!')
-    setInputFile(await window.myAPI.openDialog())
-    console.log(inputFilePath)
-  }
   const multiImportButton = async () => {
     setInputList(await window.myAPI.openMultipleDialog())
   }
@@ -28,14 +24,12 @@ function App(): JSX.Element {
         Please try pressing <code>F12</code> to open the devTool
       </p>
       <div className="actions">
-        <div className="action" id="button">
-          <a onClick={importButton}>Select file</a>
-        </div>
+        <ImportButton setInputFile={setInputFile} />
         <div className="text">{`Input: ${inputFilePath}`}</div>
         <div className="action" id="multiImportButton">
           <a onClick={multiImportButton}>Select multiple files</a>
         </div>
-        <div className='text'>{inputListMap}</div>
+        <div className="text">{inputListMap}</div>
         <select id="codecSelect">
           <option value="">--Select codec--</option>
           <option value="h264_nvenc">NVIDIA NVENC H.264</option>
@@ -71,17 +65,18 @@ function App(): JSX.Element {
         <p id="ffmpegLog" />
       </div>
       <div className="actions">
-            <div className="action">
-              <a href="https://electron-vite.org/" target="_blank" rel="noreferrer">
-                Documentation
-              </a>
-            </div>
-            <div className="action">
-              <a target="_blank" rel="noreferrer" onClick={ipcHandle}>
-                Send IPC
-              </a>
-            </ div>
-      </div><Versions></Versions>
+        <div className="action">
+          <a href="https://electron-vite.org/" target="_blank" rel="noreferrer">
+            Documentation
+          </a>
+        </div>
+        <div className="action">
+          <a target="_blank" rel="noreferrer" onClick={ipcHandle}>
+            Send IPC
+          </a>
+        </div>
+      </div>
+      <Versions></Versions>
     </div>
   )
 }
