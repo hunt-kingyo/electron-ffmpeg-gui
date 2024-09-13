@@ -1,5 +1,5 @@
+/* eslint-disable react/react-in-jsx-scope */
 import { useState } from 'react'
-import React from 'react'
 
 function Versions(): JSX.Element {
   const [versions] = useState(window.electron.process.versions)
