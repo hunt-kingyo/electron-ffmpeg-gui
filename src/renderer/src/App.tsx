@@ -1,22 +1,18 @@
 import React from 'react'
 import ImportButton from './components/ImportButton'
+import MultiImportButton from './components/MultiImportButton'
 
 function App(): JSX.Element {
   const [inputFilePath, setInputFile] = React.useState<string>('')
-  const [inputFileList, setInputList] = React.useState([])
+  const [inputFileList, setInputList] = React.useState<string[]>([])
   const inputListMap = inputFileList.map((filePath) => <li key={filePath}>{filePath}</li>)
-  const multiImportButton = async () => {
-    setInputList(await window.myAPI.openMultipleDialog())
-  }
 
   return (
     <div>
       <div className="actions">
         <ImportButton setInputFile={setInputFile} />
         <div className="text">{`Input: ${inputFilePath}`}</div>
-        <div className="action" id="multiImportButton">
-          <a onClick={multiImportButton}>Select multiple files</a>
-        </div>
+        <MultiImportButton setInputList={setInputList} />
         <div className="text">{inputListMap}</div>
         <select id="codecSelect">
           <option value="">--Select codec--</option>
