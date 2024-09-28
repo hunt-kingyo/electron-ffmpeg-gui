@@ -24,11 +24,12 @@
 }
 
 :root {
-  --color-background: var(--ev-c-black);
+  /*ここでbackground colorを変更できる*/
+  --color-background: var(--ev-c-white-soft);
   --color-background-soft: var(--ev-c-black-soft);
   --color-background-mute: var(--ev-c-black-mute);
 
-  --color-text: var(--ev-c-text-1);
+  --color-text: var(--ev-c-gray-3);
 }
 
 *,
