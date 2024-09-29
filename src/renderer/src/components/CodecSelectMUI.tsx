@@ -10,7 +10,7 @@ type CodecSelectProps = {
     selectedCodec: string
 }
 
-const CodecSelect: React.FC<CodecSelectProps> = ({ selectedCodec,setCodec }) => {
+const CodecSelectMUI: React.FC<CodecSelectProps> = ({ selectedCodec,setCodec }) => {
     const handleCodec = (event: SelectChangeEvent) => {
         setCodec(event.target.value as string);
     };
@@ -27,6 +27,7 @@ const CodecSelect: React.FC<CodecSelectProps> = ({ selectedCodec,setCodec }) => 
                     onChange={handleCodec}
 
                     >
+                    
                     <MenuItem value="h264_nvenc">NVIDIA NVENC H.264</MenuItem>
                     <MenuItem value="hevc_nvenc">NVIDIA NVENC H.265</MenuItem>
                     <MenuItem value="av1_nvenc">NVIDIA NVENC av1</MenuItem>
@@ -43,4 +44,4 @@ const CodecSelect: React.FC<CodecSelectProps> = ({ selectedCodec,setCodec }) => 
     )
 }
 
-export default CodecSelect
+export default CodecSelectMUI

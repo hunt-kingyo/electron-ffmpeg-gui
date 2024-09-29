@@ -1,12 +1,25 @@
-let codecOptionList: {
-    libx264: string[];
-    dnxhd: string[];
-};
+interface codecOptionList {
+    libx264: codecOption[];
+    dnxhd: codecOption[];
+}
+interface codecOption {
+    label: string;
+}
 
-// eslint-disable-next-line prefer-const
-codecOptionList = {
-    libx264: ["-crf 18", "-crf 20", "-crf 22"],
-    dnxhd: ["-profile 5", "-profile 4", "-profile 3", "-profile 2", "-profile 1", "-profile 0"],
+const codecOptionList = {
+    libx264: [
+        { label: "-crf 18", id:"-crf 18"},
+        { label: "-crf 20", id: "-crf 20"}, 
+        { label: "-crf 22", id: "-crf 22"}
+    ],
+    dnxhd: [
+        {label: "DNxHR 444", id: "-profile 5" }, 
+        {label: "DNxHR HQX", id: "-profile 4"}, 
+        {label:"DNxHR HQ", id: "-profile 3"}, 
+        {label: "DNxHR SQ", id: "-profile 2"}, 
+        {label: "DNxHR LQ", id: "-profile 1"}, 
+        {label: "DNxHD", id: "-profile 0"}
+    ],
 }
 
 export default codecOptionList
