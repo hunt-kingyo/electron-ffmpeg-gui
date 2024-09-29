@@ -2,7 +2,7 @@ import * as React from 'react'
 import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
 import { Autocomplete, TextField } from '@mui/material';
-import switchCodecOption from './CodecOptionObject';
+import switchCodecOption from './SwitchCodecOption';
 
 
 type OptionSelectProps = {
@@ -12,7 +12,7 @@ type OptionSelectProps = {
 }
 
 const CodecSelect: React.FC<OptionSelectProps> = ({ selectedCodec, setOption }) => {
-    const handleOption = (event: React.SyntheticEvent<Element, Event>, selectedValue) => {
+    const handleOption = (_event: React.SyntheticEvent<Element, Event>, selectedValue) => {
         setOption(selectedValue.id);
     };
 

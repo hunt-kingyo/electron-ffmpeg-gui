@@ -1,4 +1,4 @@
-import codecOptionList from './CodecOptionList'
+import codecOptionList from '../datas/CodecOptionList'
 
 type CodecLists = {
     libx264: string[];
