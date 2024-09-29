@@ -3,13 +3,13 @@ import ImportButton from './components/ImportButton'
 import MultiImportButton from './components/MultiImportButton'
 import CodecSelectMUI from './components/CodecSelectMUI'
 import OptionSelect from './components/OptionSelect'
-import codecOptionList from './components/CodecOptionList'
 
 function App(): JSX.Element {
+
   const [inputFilePath, setInputFile] = React.useState<string>('')
   const [inputFileList, setInputList] = React.useState<string[]>([])
   const [selectedCodec, setCodec] = React.useState<string>('')
-  const [selectedOption, setOption] = React.useState<string | null>(null)
+  const [selectedOption, setOption] = React.useState<string>('')
   const inputListMap = inputFileList.map((filePath) => <li key={filePath}>{filePath}</li>)
 
   return (
@@ -29,6 +29,7 @@ function App(): JSX.Element {
           <option value="_FFmpegGUI">_FFmpegGUI</option>
         </select>
         <OptionSelect selectedCodec={selectedCodec} setOption={setOption} selectedOption={''}/>
+        {selectedOption}
         <br />
         <div className="action" id="outputButton">
           <a>Select output folder</a>
