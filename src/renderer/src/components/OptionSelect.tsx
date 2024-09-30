@@ -24,7 +24,7 @@ const CodecSelect: React.FC<OptionSelectProps> = ({ selectedCodec, setOption }) 
                     onChange={handleOption}
                     options={switchCodecOption(selectedCodec)}
                     sx={{width: 300}}
-                    renderInput={(params) => <TextField {...params} label="Codec" />}
+                    renderInput={(params) => <TextField {...params} label="Option" />}
                 />
             </FormControl>
         </Box>

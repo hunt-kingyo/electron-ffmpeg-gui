@@ -7,7 +7,12 @@ type CodecLists = {
 
 const switchCodecOption = (selectedCodec) => {
     const codecName: keyof CodecLists = selectedCodec
-    return codecOptionList[codecName]
+    if (selectedCodec != '') {
+        return codecOptionList[codecName]
+    }else{
+        return [{label: 'Select codec first', id: ''}]
+    }
+
 }
 
 export default switchCodecOption

@@ -8,11 +8,13 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 type CodecSelectProps = {
     setCodec: React.Dispatch<React.SetStateAction<string>>
     selectedCodec: string
+    setOption: React.Dispatch<React.SetStateAction<string>>
 }
 
-const CodecSelectMUI: React.FC<CodecSelectProps> = ({ selectedCodec,setCodec }) => {
+const CodecSelectMUI: React.FC<CodecSelectProps> = ({ selectedCodec, setCodec, setOption }) => {
     const handleCodec = (event: SelectChangeEvent) => {
         setCodec(event.target.value as string);
+        setOption('')
     };
 
     return (

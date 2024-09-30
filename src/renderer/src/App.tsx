@@ -19,7 +19,7 @@ function App(): JSX.Element {
         <div className="text">{`Input: ${inputFilePath}`}</div>
         <MultiImportButton setInputList={setInputList} />
         <div className="text">{inputListMap}</div>
-        <CodecSelectMUI setCodec={setCodec} selectedCodec={''} />
+        <CodecSelectMUI setCodec={setCodec} selectedCodec={''} setOption={setOption} />
         <br />
         <select id="suffixSelect">
           <option value="">(none)</option>
