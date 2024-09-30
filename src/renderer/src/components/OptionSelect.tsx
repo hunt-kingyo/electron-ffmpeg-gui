@@ -1,6 +1,6 @@
 import * as React from 'react'
 import Box from '@mui/material/Box';
-import FormControl from '@mui/material/FormControl';
+{/*import FormControl from '@mui/material/FormControl';*/}
 import { Autocomplete, TextField } from '@mui/material';
 import switchCodecOption from './SwitchCodecOption';
 
@@ -18,7 +18,7 @@ const CodecSelect: React.FC<OptionSelectProps> = ({ selectedCodec, setOption }) 
 
     return (
         <Box sx={{ minWidth: 120 }}>
-            <FormControl fullWidth>
+            {/*<FormControl fullWidth>*/}
                 <Autocomplete 
                     disablePortal
                     onChange={handleOption}
@@ -26,7 +26,7 @@ const CodecSelect: React.FC<OptionSelectProps> = ({ selectedCodec, setOption }) 
                     sx={{width: 300}}
                     renderInput={(params) => <TextField {...params} label="Option" />}
                 />
-            </FormControl>
+            {/*</FormControl>*/}
         </Box>
     )
 }
