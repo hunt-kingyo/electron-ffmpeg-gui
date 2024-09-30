@@ -2,7 +2,7 @@ import * as React from 'react'
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-{/*import FormControl from '@mui/material/FormControl';*/}
+import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 type CodecSelectProps = {
@@ -19,7 +19,7 @@ const CodecSelectMUI: React.FC<CodecSelectProps> = ({ selectedCodec, setCodec, s
 
     return (
         <Box sx={{ minWidth: 120 }}>
-            {/*<FormControl fullWidth>*/}
+            <FormControl fullWidth>
                 <InputLabel id="select-codec-label">Codec</InputLabel>
                 <Select 
                     labelId='select-codec-label'
@@ -41,7 +41,7 @@ const CodecSelectMUI: React.FC<CodecSelectProps> = ({ selectedCodec, setCodec, s
                     <MenuItem value="cfhd">GoPro CineForm HD</MenuItem>
                     <MenuItem value="prores_ks">Apple ProRes(iCodec Pro)</MenuItem>
                 </Select>
-            {/*</FormControl>*/}
+            </FormControl>
         </Box>
     )
 }
