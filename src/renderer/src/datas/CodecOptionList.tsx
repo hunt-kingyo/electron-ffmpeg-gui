@@ -17,7 +17,7 @@ const codecOptionList = {
         {label: "DNxHR HQX", id: "-profile 4"}, 
         {label:"DNxHR HQ", id: "-profile 3"}, 
         {label: "DNxHR SQ", id: "-profile 2"}, 
-        {label: "DNxHR LQ", id: "-profile 1"}, 
+        {label: "DNxHR LB", id: "-profile 1"}, 
         {label: "DNxHD", id: "-profile 0"}
     ],
 }

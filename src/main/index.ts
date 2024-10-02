@@ -33,6 +33,7 @@ function createWindow(): void {
   //const bitrate: string = ''
   //containerは拡張子が入る
   //ffmpegで指定する必要があるなら別の変数にする
+  //mxfが拡張子から一意にしきべつできないためformatで定義する
   const container = '.mov'
   //string型は値が更新されないためここではあくまでstring型の変数しか定義しない
   //ラッパーオブジェクトも考えたがうまく機能しなかった
