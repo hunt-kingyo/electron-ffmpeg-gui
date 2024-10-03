@@ -17,6 +17,8 @@ if (process.contextIsolated) {
       openOutputDialog: () => ipcRenderer.invoke('open-output-dialog'),
       selectCodec: (codec: string) => ipcRenderer.send('select-codec', codec),
       selectSuffix: (suffix: string) => ipcRenderer.send('select-suffix', suffix),
+      selectOption: (option: string) => ipcRenderer.send('select-option', option),
+      selectFormat: (format: string) => ipcRenderer.send('select-format', format),
       startFfmpeg: () => ipcRenderer.send('start-ffmpeg'),
       checkFilePath: (callback) =>
         ipcRenderer.on('check-file-path', (_event, message: string) => {

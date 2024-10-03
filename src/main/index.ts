@@ -29,12 +29,10 @@ function createWindow(): void {
   let outputFolder: string = ''
   let videoCodec: string = 'libx264'
   let suffix: string = ''
-  //const options: string = ''
+  let format: string = ''
+  //オプションは['-option param',]または['-option', 'param',]の形で渡す
+  let options: string[] = []
   //const bitrate: string = ''
-  //containerは拡張子が入る
-  //ffmpegで指定する必要があるなら別の変数にする
-  //mxfが拡張子から一意にしきべつできないためformatで定義する
-  const container = '.mov'
   //string型は値が更新されないためここではあくまでstring型の変数しか定義しない
   //ラッパーオブジェクトも考えたがうまく機能しなかった
   let outputFilePath = ''
@@ -81,8 +79,17 @@ function createWindow(): void {
     )
   })
 
-  ipcMain.on('select-codec', async (_e, codec: string): Promise<void> => {
+  ipcMain.on('select-codec', async (_e, codec): Promise<void> => {
     videoCodec = codec
+  })
+
+  ipcMain.on('select-option', async(_e, selectedOption): Promise<void> => {
+    //配列を浅くコピーする
+    options = [...selectedOption]
+  })
+
+  ipcMain.on('select-format', async(_e, selectedFormat): Promise<void> => {
+    format = selectedFormat
   })
 
   ipcMain.on('select-suffix', async (_e, suffixSelected: string): Promise<void> => {
@@ -106,7 +113,7 @@ function createWindow(): void {
   ipcMain.on('start-ffmpeg', async () => {
     //値を更新
     outputFilePath =
-      join(outputFolder, basename(inputFilePath, extname(inputFilePath))) + suffix + container
+      join(outputFolder, basename(inputFilePath, extname(inputFilePath))) + suffix
     if (existsSync(outputFilePath)) {
       mainWindow.webContents.send(
         'check-file-path',
@@ -119,13 +126,15 @@ function createWindow(): void {
         `--selected option--\n\
         inputFilePath: ${inputFilePath}\n\
         videoCodec: ${videoCodec}\n\
+        
         suffix: ${suffix}\n\
         outputFilePath: ${outputFilePath}\n`
       )
       ffmpeg(inputFilePath)
         .videoCodec(videoCodec)
         //やるならcontainerではなく別の変数に変更
-        //.format(container)
+        .outputOption(options)
+        .format(format)
         .on('progress', function (progress) {
           console.log('Processing: ' + progress.percent + '% done')
           mainWindow.webContents.send('ffmpeg-log', 'Processing: ' + progress.percent + '% done')

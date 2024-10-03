@@ -14,7 +14,8 @@ type CodecSelectProps = {
 const CodecSelectMUI: React.FC<CodecSelectProps> = ({ selectedCodec, setCodec, setOption }) => {
     const handleCodec = (event: SelectChangeEvent) => {
         setCodec(event.target.value as string);
-        setOption('')
+        setOption('');
+        window.myAPI.selectCodec(event.target.value as string);
     };
 
     return (
