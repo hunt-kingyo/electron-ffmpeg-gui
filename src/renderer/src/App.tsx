@@ -3,6 +3,8 @@ import ImportButton from './components/ImportButton'
 import MultiImportButton from './components/MultiImportButton'
 import CodecSelectMUI from './components/CodecSelectMUI'
 import OptionSelect from './components/OptionSelect'
+import EncodeButton from './components/EncodeButton'
+import OutputButton from './components/OutputButton'
 
 function App(): JSX.Element {
 
@@ -13,6 +15,8 @@ function App(): JSX.Element {
   const [_selectedOption, setOption] = React.useState<string[]>([])
   // eslint-disable-next-line @typescript-eslint/no-unused-vars 
   const [_selectedFormat, setFormat] = React.useState<string>('')
+  const [outputFolder, setOutputFolder] = React.useState<string>('')
+  //const [ffmpegLog, setffmpegLog] = React.useState<string>('')
   const inputListMap = inputFileList.map((filePath) => <li key={filePath}>{filePath}</li>)
 
   return (
@@ -34,18 +38,13 @@ function App(): JSX.Element {
         <OptionSelect selectedCodec={selectedCodec} setOption={setOption} selectedOption={[]}/>
         {/*<SelectFormat selectedCodec={selectedCodec} setFormat={setFormat} selectedFormat={''}/>*/}
         <br />
-        <button className="action" >
-          <a>Select output folder</a>
-        </button>
-        <p id="outputFolder" />
+        <OutputButton setOutputFolder={setOutputFolder} />
+        <div className='text'>{outputFolder}</div>
       </div>
-      <div className="actions">
-        <button className="action" id="encodeButton">
-          <a>Encode</a>
-        </button>
-        <p id="checkFilePath" />
-        <p id="ffmpegLog" />
-      </div>
+      <EncodeButton />
+      <p id="checkFilePath" />
+      <p id="ffmpegLog" />
+
     </div>
   )
 }
