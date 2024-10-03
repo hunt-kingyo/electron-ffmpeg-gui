@@ -81,19 +81,23 @@ function createWindow(): void {
 
   ipcMain.on('select-codec', async (_e, codec): Promise<void> => {
     videoCodec = codec
+    console.log(videoCodec)
   })
 
   ipcMain.on('select-option', async(_e, selectedOption): Promise<void> => {
     //配列を浅くコピーする
     options = [...selectedOption]
+    console.log(options)
   })
 
   ipcMain.on('select-format', async(_e, selectedFormat): Promise<void> => {
     format = selectedFormat
+    console.log(format)
   })
 
   ipcMain.on('select-suffix', async (_e, suffixSelected: string): Promise<void> => {
     suffix = suffixSelected
+    console.log(suffix)
   })
 
   ipcMain.handle('open-output-dialog', async () => {
@@ -105,6 +109,7 @@ function createWindow(): void {
         if (result.canceled) return ''
 
         outputFolder = result.filePaths[0]
+        console.log(outputFolder)
         return outputFolder
       })
       .catch((err) => console.error(err))

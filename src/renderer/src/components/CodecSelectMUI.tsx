@@ -8,13 +8,13 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 type CodecSelectProps = {
     setCodec: React.Dispatch<React.SetStateAction<string>>
     selectedCodec: string
-    setOption: React.Dispatch<React.SetStateAction<string>>
+    setOption: React.Dispatch<React.SetStateAction<string[]>>
 }
 
 const CodecSelectMUI: React.FC<CodecSelectProps> = ({ selectedCodec, setCodec, setOption }) => {
     const handleCodec = (event: SelectChangeEvent) => {
         setCodec(event.target.value as string);
-        setOption('');
+        setOption([]);
         window.myAPI.selectCodec(event.target.value as string);
     };
 
@@ -28,7 +28,6 @@ const CodecSelectMUI: React.FC<CodecSelectProps> = ({ selectedCodec, setCodec, s
                     label="Codec"
                     value={selectedCodec}
                     onChange={handleCodec}
-
                     >
                     
                     <MenuItem value="h264_nvenc">NVIDIA NVENC H.264</MenuItem>

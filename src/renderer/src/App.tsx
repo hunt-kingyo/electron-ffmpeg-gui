@@ -9,7 +9,10 @@ function App(): JSX.Element {
   const [inputFilePath, setInputFile] = React.useState<string>('')
   const [inputFileList, setInputList] = React.useState<string[]>([])
   const [selectedCodec, setCodec] = React.useState<string>('')
-  const [selectedOption, setOption] = React.useState<string>('')
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_selectedOption, setOption] = React.useState<string[]>([])
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars 
+  const [_selectedFormat, setFormat] = React.useState<string>('')
   const inputListMap = inputFileList.map((filePath) => <li key={filePath}>{filePath}</li>)
 
   return (
@@ -28,18 +31,18 @@ function App(): JSX.Element {
           <option value="_converted">_converted</option>
           <option value="_FFmpegGUI">_FFmpegGUI</option>
         </select>
-        <OptionSelect selectedCodec={selectedCodec} setOption={setOption} selectedOption={''}/>
-        {selectedOption}
+        <OptionSelect selectedCodec={selectedCodec} setOption={setOption} selectedOption={[]}/>
+        {/*<SelectFormat selectedCodec={selectedCodec} setFormat={setFormat} selectedFormat={''}/>*/}
         <br />
-        <div className="action" id="outputButton">
+        <button className="action" >
           <a>Select output folder</a>
-        </div>
+        </button>
         <p id="outputFolder" />
       </div>
       <div className="actions">
-        <div className="action" id="encodeButton">
+        <button className="action" id="encodeButton">
           <a>Encode</a>
-        </div>
+        </button>
         <p id="checkFilePath" />
         <p id="ffmpegLog" />
       </div>

@@ -6,14 +6,15 @@ import switchCodecOption from './SwitchCodecOption';
 
 
 type OptionSelectProps = {
-    setOption: React.Dispatch<React.SetStateAction<string>>
-    selectedOption: string
+    setOption: React.Dispatch<React.SetStateAction<string[]>>
+    selectedOption: string[]
     selectedCodec: string
 }
 
-const CodecSelect: React.FC<OptionSelectProps> = ({ selectedCodec, setOption }) => {
+const CodecSelect: React.FC<OptionSelectProps> = ({ selectedCodec, setOption, selectedOption }) => {
     const handleOption = (_event: React.SyntheticEvent<Element, Event>, selectedValue) => {
-        setOption(selectedValue.id);
+        setOption([...selectedOption, selectedValue.id]);
+        window.myAPI.selectOption([...selectedOption, selectedValue.id])
     };
 
     return (
