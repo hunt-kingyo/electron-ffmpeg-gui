@@ -3,6 +3,7 @@ import ImportButton from './components/ImportButton'
 import MultiImportButton from './components/MultiImportButton'
 import CodecSelectMUI from './components/CodecSelectMUI'
 import OptionSelect from './components/OptionSelect'
+import SelectFormat from './components/SelectFormat'
 import EncodeButton from './components/EncodeButton'
 import OutputButton from './components/OutputButton'
 
@@ -38,6 +39,7 @@ function App(): JSX.Element {
         <OptionSelect selectedCodec={selectedCodec} setOption={setOption} selectedOption={[]}/>
         {/*<SelectFormat selectedCodec={selectedCodec} setFormat={setFormat} selectedFormat={''}/>*/}
         <br />
+        <SelectFormat selectedCodec={selectedCodec} setFormat={setFormat} selectedFormat={''}/>
         <OutputButton setOutputFolder={setOutputFolder} />
         <div className='text'>{outputFolder}</div>
       </div>
