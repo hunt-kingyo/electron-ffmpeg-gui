@@ -9,12 +9,14 @@ type CodecSelectProps = {
     setCodec: React.Dispatch<React.SetStateAction<string>>
     selectedCodec: string
     setOption: React.Dispatch<React.SetStateAction<string[]>>
+    setFormat: React.Dispatch<React.SetStateAction<string>>
 }
 
-const CodecSelectMUI: React.FC<CodecSelectProps> = ({ selectedCodec, setCodec, setOption }) => {
+const CodecSelectMUI: React.FC<CodecSelectProps> = ({ selectedCodec, setCodec, setOption, setFormat }) => {
     const handleCodec = (event: SelectChangeEvent) => {
         setCodec(event.target.value as string);
         setOption([]);
+        setFormat('');
         window.myAPI.selectCodec(event.target.value as string);
     };
 

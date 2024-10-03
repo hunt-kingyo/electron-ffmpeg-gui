@@ -125,8 +125,18 @@ function createWindow(): void {
         `file already exists: ${outputFilePath}\n\
         select suffix, or other output folder.\n`
       )
+      console.log('file already exists\n')
     } else {
       mainWindow.webContents.send(
+        'check-file-path',
+        `--selected option--\n\
+        inputFilePath: ${inputFilePath}\n\
+        videoCodec: ${videoCodec}\n\
+        
+        suffix: ${suffix}\n\
+        outputFilePath: ${outputFilePath}\n`
+      )
+      console.log(
         'check-file-path',
         `--selected option--\n\
         inputFilePath: ${inputFilePath}\n\

@@ -27,7 +27,7 @@ function App(): JSX.Element {
         <div className="text">{`Input: ${inputFilePath}`}</div>
         <MultiImportButton setInputList={setInputList} />
         <div className="text">{inputListMap}</div>
-        <CodecSelectMUI setCodec={setCodec} selectedCodec={''} setOption={setOption} />
+        <CodecSelectMUI setCodec={setCodec} selectedCodec={''} setOption={setOption} setFormat={setFormat} />
         <br />
         <select id="suffixSelect">
           <option value="">(none)</option>
@@ -37,9 +37,8 @@ function App(): JSX.Element {
           <option value="_FFmpegGUI">_FFmpegGUI</option>
         </select>
         <OptionSelect selectedCodec={selectedCodec} setOption={setOption} selectedOption={[]}/>
-        {/*<SelectFormat selectedCodec={selectedCodec} setFormat={setFormat} selectedFormat={''}/>*/}
         <br />
-        <SelectFormat selectedCodec={selectedCodec} setFormat={setFormat} selectedFormat={''}/>
+        <SelectFormat selectedCodec={selectedCodec} setFormat={setFormat} />
         <OutputButton setOutputFolder={setOutputFolder} />
         <div className='text'>{outputFolder}</div>
       </div>
