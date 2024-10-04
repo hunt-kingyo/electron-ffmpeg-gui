@@ -9,9 +9,9 @@ type SelectFormatProps = {
 }
 
 const SelectFormat: React.FC<SelectFormatProps> = ({ setFormat, selectedCodec }) => {
-    const handleFormat = (_event: React.SyntheticEvent<Element, Event>, selectedFormat) => {
-        setFormat(selectedFormat);
-        window.myAPI.selectFormat(selectedFormat)
+    const handleFormat = (_event: React.SyntheticEvent<Element, Event>, format) => {
+        setFormat(format.id);
+        window.myAPI.selectFormat(format.id)
     };
 
     return (

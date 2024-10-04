@@ -5,6 +5,7 @@ import ffmpeg from 'fluent-ffmpeg'
 import ffmpegStatic from 'ffmpeg-static'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import getExt from './getExt'
 
 ffmpeg.setFfmpegPath(ffmpegStatic)
 
@@ -118,7 +119,7 @@ function createWindow(): void {
   ipcMain.on('start-ffmpeg', async () => {
     //値を更新
     outputFilePath =
-      join(outputFolder, basename(inputFilePath, extname(inputFilePath))) + suffix
+      join(outputFolder, basename(inputFilePath, extname(inputFilePath))) + suffix + getExt(format)
     if (existsSync(outputFilePath)) {
       mainWindow.webContents.send(
         'check-file-path',
