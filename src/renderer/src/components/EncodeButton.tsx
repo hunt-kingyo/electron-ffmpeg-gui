@@ -6,7 +6,7 @@ type EncodeButtonProps = object
 const EncodeButton: React.FC<EncodeButtonProps> = () => {
   return (
     <>
-      <Button variant="contained" color="primary" onClick={window.myAPI.startFfmpeg()}>
+      <Button variant="contained" color="primary" onClick={window.myAPI.startFfmpeg}>
         Encode
       </Button>
     </>
