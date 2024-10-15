@@ -14,7 +14,6 @@ function App(): JSX.Element {
   const [selectedCodec, setCodec] = React.useState<string>('')
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_selectedOption, setOption] = React.useState<string[]>([])
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars 
   const [selectedFormat, setFormat] = React.useState<string>('')
   const [outputFolder, setOutputFolder] = React.useState<string>('')
   //const [ffmpegLog, setffmpegLog] = React.useState<string>('')
