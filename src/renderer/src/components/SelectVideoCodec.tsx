@@ -4,21 +4,21 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { useEncodeOptions } from './useEncodeOptions';
 
-type CodecSelectProps = {
-    setCodec: React.Dispatch<React.SetStateAction<string>>
-    selectedCodec: string
-    setOption: React.Dispatch<React.SetStateAction<string[]>>
-    setFormat: React.Dispatch<React.SetStateAction<string>>
+interface SelectVideoCodecProps {
+    onVideoCodecChange: (videocodec: string) => void;
 }
 
-const CodecSelectMUI: React.FC<CodecSelectProps> = ({ selectedCodec, setCodec, setOption, setFormat }) => {
+const SelectVideoCodec: React.FC<SelectVideoCodecProps> = ({ onVideoCodecChange }) => {
     const handleCodec = (event: SelectChangeEvent) => {
-        setCodec(event.target.value as string);
-        setOption([]);
-        setFormat('');
+        onVideoCodecChange(event.target.value as string);
         window.myAPI.selectCodec(event.target.value as string);
     };
+
+    const {
+        encodeOptions
+    } = useEncodeOptions();
 
     return (
         <Box sx={{ minWidth: 120 }}>
@@ -27,8 +27,8 @@ const CodecSelectMUI: React.FC<CodecSelectProps> = ({ selectedCodec, setCodec, s
                 <Select 
                     labelId='select-codec-label'
                     id="codecSelect"
-                    label="Codec"
-                    value={selectedCodec}
+                    label='Codec'
+                    value={encodeOptions.videoCodec}
                     onChange={handleCodec}
                     >
                     
@@ -48,4 +48,4 @@ const CodecSelectMUI: React.FC<CodecSelectProps> = ({ selectedCodec, setCodec, s
     )
 }
 
-export default CodecSelectMUI
+export default SelectVideoCodec

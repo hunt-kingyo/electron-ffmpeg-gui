@@ -1,21 +1,17 @@
 import React from 'react'
 import ImportButton from './components/ImportButton'
 import MultiImportButton from './components/MultiImportButton'
-import CodecSelectMUI from './components/CodecSelectMUI'
-import OptionSelect from './components/OptionSelect'
-import SelectFormat from './components/SelectFormat'
+import SelectVideoCodec from './components/SelectVideoCodec'
+import SelectCodecOption from './components/SelectCodecOption'
+import SelectContainerFormat from './components/SelectContainerFormat'
 import EncodeButton from './components/EncodeButton'
 import OutputButton from './components/OutputButton'
-import { useEncodeOptions } from './useEncodeOptions'
+import { useEncodeOptions } from './components/useEncodeOptions'
 
 function App(): JSX.Element {
 
   const [inputFilePath, setInputFile] = React.useState<string>('')
   const [inputFileList, setInputList] = React.useState<string[]>([])
-  const [selectedCodec, setCodec] = React.useState<string>('')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_selectedOption, setOption] = React.useState<string[]>([])
-  const [selectedFormat, setFormat] = React.useState<string>('')
   //const [ffmpegLog, setffmpegLog] = React.useState<string>('')
   const inputListMap = inputFileList.map((filePath) => <li key={filePath}>{filePath}</li>)
 
@@ -37,7 +33,8 @@ function App(): JSX.Element {
         <div className="text">{`Input: ${inputFilePath}`}</div>
         <MultiImportButton setInputList={setInputList} />
         <div className="text">{inputListMap}</div>
-        <CodecSelectMUI setCodec={setCodec} selectedCodec={''} setOption={setOption} setFormat={setFormat} />
+        <SelectVideoCodec onVideoCodecChange={setVideoCodec} />
+        {encodeOptions.videoCodec}
         <br />
         <select id="suffixSelect">
           <option value="">(none)</option>
@@ -46,10 +43,10 @@ function App(): JSX.Element {
           <option value="_converted">_converted</option>
           <option value="_FFmpegGUI">_FFmpegGUI</option>
         </select>
-        <OptionSelect selectedCodec={selectedCodec} setOption={setOption} selectedOption={[]}/>
+        <SelectCodecOption onCodecOptionChange={setCodecOption}/>
         <br />
-        <SelectFormat selectedCodec={selectedCodec} setFormat={setFormat} />
-        {selectedFormat}
+        <SelectContainerFormat onContainerFormatChange={setContainerFormat} />
+        {encodeOptions.containerFormat}
         <OutputButton onOutputFolderChange={setOutputFolder} />
         <div className='text'>{encodeOptions.outputFolder}</div>
       </div>

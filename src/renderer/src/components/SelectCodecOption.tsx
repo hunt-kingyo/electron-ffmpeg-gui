@@ -3,18 +3,20 @@ import Box from '@mui/material/Box';
 {/*import FormControl from '@mui/material/FormControl';*/}
 import { Autocomplete, TextField } from '@mui/material';
 import switchCodecOption from './SwitchCodecOption';
+import { useEncodeOptions } from './useEncodeOptions';
 
-
-type OptionSelectProps = {
-    setOption: React.Dispatch<React.SetStateAction<string[]>>
-    selectedOption: string[]
-    selectedCodec: string
+interface SelectCodecOptionProps {
+    onCodecOptionChange: (codecOption: string[]) => void;
 }
 
-const CodecSelect: React.FC<OptionSelectProps> = ({ selectedCodec, setOption, selectedOption }) => {
+const SelectCodecOption: React.FC<SelectCodecOptionProps> = ({ onCodecOptionChange }) => {
+    const {
+        encodeOptions
+    } = useEncodeOptions();
+    
     const handleOption = (_event: React.SyntheticEvent<Element, Event>, selectedValue) => {
-        setOption([...selectedOption, selectedValue.id]);
-        window.myAPI.selectOption([...selectedOption, selectedValue.id])
+        onCodecOptionChange([...encodeOptions.codecOption, selectedValue.id]);
+        window.myAPI.selectCodecOption([...encodeOptions.codecOption, selectedValue.id])
     };
 
     return (
@@ -23,7 +25,7 @@ const CodecSelect: React.FC<OptionSelectProps> = ({ selectedCodec, setOption, se
                 <Autocomplete 
                     disablePortal
                     onChange={handleOption}
-                    options={switchCodecOption(selectedCodec)}
+                    options={switchCodecOption(encodeOptions.videoCodec)}
                     sx={{width: 300}}
                     renderInput={(params) => <TextField {...params} label="Option" />}
                 />
@@ -32,4 +34,4 @@ const CodecSelect: React.FC<OptionSelectProps> = ({ selectedCodec, setOption, se
     )
 }
 
-export default CodecSelect
+export default SelectCodecOption
