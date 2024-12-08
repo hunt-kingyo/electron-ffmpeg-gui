@@ -1,13 +1,13 @@
 import Button from '@mui/material/Button'
 import React from 'react'
 
-type OutputButtonProps = {
-  setOutputFolder: React.Dispatch<React.SetStateAction<string>>
+interface OutputButtonProps {
+  onOutputFolderChange: (outputFolder: string) => void;
 }
 
-const OutputButton: React.FC<OutputButtonProps> = ({ setOutputFolder }) => {
+const OutputButton: React.FC<OutputButtonProps> = ({ onOutputFolderChange }) => {
   const handleFilePath = async () => {
-    setOutputFolder(await window.myAPI.openOutputDialog())
+    onOutputFolderChange(await window.myAPI.openOutputDialog())
   }
   return (
     <>

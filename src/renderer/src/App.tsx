@@ -6,6 +6,7 @@ import OptionSelect from './components/OptionSelect'
 import SelectFormat from './components/SelectFormat'
 import EncodeButton from './components/EncodeButton'
 import OutputButton from './components/OutputButton'
+import { useEncodeOptions } from './useEncodeOptions'
 
 function App(): JSX.Element {
 
@@ -15,9 +16,19 @@ function App(): JSX.Element {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_selectedOption, setOption] = React.useState<string[]>([])
   const [selectedFormat, setFormat] = React.useState<string>('')
-  const [outputFolder, setOutputFolder] = React.useState<string>('')
   //const [ffmpegLog, setffmpegLog] = React.useState<string>('')
   const inputListMap = inputFileList.map((filePath) => <li key={filePath}>{filePath}</li>)
+
+  const {
+    encodeOptions,
+    setVideoCodec,
+    setCodecOption,
+    setContainerFormat,
+    setPixelFormat,
+    setVideoBitrate,
+    setSuffix,
+    setOutputFolder
+  } = useEncodeOptions();
 
   return (
     <div>
@@ -39,8 +50,8 @@ function App(): JSX.Element {
         <br />
         <SelectFormat selectedCodec={selectedCodec} setFormat={setFormat} />
         {selectedFormat}
-        <OutputButton setOutputFolder={setOutputFolder} />
-        <div className='text'>{outputFolder}</div>
+        <OutputButton onOutputFolderChange={setOutputFolder} />
+        <div className='text'>{encodeOptions.outputFolder}</div>
       </div>
       <EncodeButton />
       <p id="checkFilePath" />
