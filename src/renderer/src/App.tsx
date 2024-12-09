@@ -7,6 +7,7 @@ import SelectContainerFormat from './components/SelectContainerFormat'
 import EncodeButton from './components/EncodeButton'
 import OutputButton from './components/OutputButton'
 import { useEncodeOptions } from './components/useEncodeOptions'
+import codecOptionList from './datas/CodecOptionList'
 
 function App(): JSX.Element {
 
@@ -33,7 +34,7 @@ function App(): JSX.Element {
         <div className="text">{`Input: ${inputFilePath}`}</div>
         <MultiImportButton setInputList={setInputList} />
         <div className="text">{inputListMap}</div>
-        <SelectVideoCodec onVideoCodecChange={setVideoCodec} />
+        <SelectVideoCodec onVideoCodecChange={setVideoCodec} videoCodec={encodeOptions.videoCodec} />
         {encodeOptions.videoCodec}
         <br />
         <select id="suffixSelect">
@@ -43,9 +44,10 @@ function App(): JSX.Element {
           <option value="_converted">_converted</option>
           <option value="_FFmpegGUI">_FFmpegGUI</option>
         </select>
-        <SelectCodecOption onCodecOptionChange={setCodecOption}/>
+        <SelectCodecOption onCodecOptionChange={setCodecOption} videoCodec={encodeOptions.videoCodec} codecOption={encodeOptions.codecOption}/>
+        {encodeOptions.codecOption[0]}
         <br />
-        <SelectContainerFormat onContainerFormatChange={setContainerFormat} />
+        <SelectContainerFormat onContainerFormatChange={setContainerFormat} videoCodec={encodeOptions.videoCodec} containerFormat={encodeOptions.containerFormat} />
         {encodeOptions.containerFormat}
         <OutputButton onOutputFolderChange={setOutputFolder} />
         <div className='text'>{encodeOptions.outputFolder}</div>

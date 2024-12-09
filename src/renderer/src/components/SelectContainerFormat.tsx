@@ -2,16 +2,13 @@ import * as React from 'react'
 import Box from '@mui/material/Box';
 import { Autocomplete, TextField } from '@mui/material';
 import SwitchCodecFormat from './SwitchCodecFormat';
-import { useEncodeOptions } from './useEncodeOptions';
 
 interface SelectContainerFormatProps {
     onContainerFormatChange: (containerFormat: string) => void;
+    videoCodec: string;
 }
 
-const SelectContainerFormat: React.FC<SelectContainerFormatProps> = ({ onContainerFormatChange }) => {
-    const {
-        encodeOptions
-    } = useEncodeOptions();
+const SelectContainerFormat: React.FC<SelectContainerFormatProps> = ({ onContainerFormatChange, videoCodec }) => {
     
     const handleFormat = (_event: React.SyntheticEvent<Element, Event>, format) => {
         onContainerFormatChange(format.id);
@@ -24,7 +21,7 @@ const SelectContainerFormat: React.FC<SelectContainerFormatProps> = ({ onContain
                 <Autocomplete 
                     disablePortal
                     onChange={handleFormat}
-                    options={SwitchCodecFormat(encodeOptions.videoCodec)}
+                    options={SwitchCodecFormat(videoCodec)}
                     sx={{width: 300}}
                     renderInput={(params) => <TextField {...params} label="Format" />}
                 />
