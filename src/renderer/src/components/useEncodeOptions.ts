@@ -35,7 +35,7 @@ export const useEncodeOptions = (): UseEncodeOptionsReturn => {
     const [encodeOptions, setEncodeOptions] = useState<EncodeOptions>(initialState);
 
     const setVideoCodec = (videoCodec: string) => {
-        setEncodeOptions(prev => ({ ...prev, videoCodec }));
+        setEncodeOptions(prev => ({ ...prev, videoCodec, codecOption:'', containerFormat: '', pixelFormat:'' }));
     };
 
     const setCodecOption = (codecOption: string) => {
