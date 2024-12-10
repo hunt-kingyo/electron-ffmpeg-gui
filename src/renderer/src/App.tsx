@@ -7,7 +7,7 @@ import SelectContainerFormat from './components/SelectContainerFormat'
 import EncodeButton from './components/EncodeButton'
 import OutputButton from './components/OutputButton'
 import { useEncodeOptions } from './components/useEncodeOptions'
-import { Box, Grid, Grid2, Stack } from '@mui/material'
+import { Box, Grid2, Stack } from '@mui/material'
 
 function App(): JSX.Element {
 

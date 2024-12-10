@@ -7,6 +7,16 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import getExt from './getExt'
 
+interface EncodeOptions {
+  videoCodec:string;
+  codecOption:string;
+  containerFormat:string;
+  pixelFormat:string;
+  videoBitrate:string;
+  suffix: string;
+  outputFolder:string;
+}
+
 ffmpeg.setFfmpegPath(ffmpegStatic)
 
 function createWindow(): void {
@@ -28,10 +38,10 @@ function createWindow(): void {
   //入力ファイルのリスト
   const inputFileList: string[] = []
   let outputFolder: string = ''
-  let videoCodec: string = ''
-  let option: string = ''
-  let suffix: string = ''
-  let format: string = ''
+  let videoCodec1: string = ''
+  let option1: string = ''
+  let suffix1: string = ''
+  let format1: string = ''
   //オプションは['-option param',]または['-option', 'param',]の形で渡す
   //文字列が送られてくるが、どうせ配列でffmpegに渡す必要があるためこうした
   let options: string[] = []
@@ -83,24 +93,24 @@ function createWindow(): void {
   })
 
   ipcMain.on('select-codec', async (_e, codec): Promise<void> => {
-    videoCodec = codec
-    console.log(videoCodec)
+    videoCodec1 = codec
+    console.log(videoCodec1)
   })
 
   ipcMain.on('select-option', async(_e, selectedOption): Promise<void> => {
     //配列を浅くコピーする
-    option = selectedOption
-    console.log(options)
+    option1 = selectedOption
+    console.log(option1)
   })
 
   ipcMain.on('select-format', async(_e, selectedFormat): Promise<void> => {
-    format = selectedFormat
-    console.log(format)
+    format1 = selectedFormat
+    console.log(format1)
   })
 
   ipcMain.on('select-suffix', async (_e, suffixSelected: string): Promise<void> => {
-    suffix = suffixSelected
-    console.log(suffix)
+    suffix1 = suffixSelected
+    console.log(suffix1)
   })
 
   ipcMain.handle('open-output-dialog', async () => {
@@ -118,7 +128,16 @@ function createWindow(): void {
       .catch((err) => console.error(err))
   })
 
-  ipcMain.on('start-ffmpeg', async () => {
+  ipcMain.on('start-ffmpeg', async (_e, encodeOptions: EncodeOptions) => {
+    const {
+      videoCodec: videoCodec, 
+      codecOption: option, 
+      containerFormat: format,
+      pixelFormat: pix_fmt,
+      videoBitrate: v_bitrate,
+      suffix: suffix,
+      outputFolder: outputFolder,
+    } = encodeOptions
     //値を更新
     outputFilePath =
       join(outputFolder, basename(inputFilePath, extname(inputFilePath))) + suffix + getExt(format)
