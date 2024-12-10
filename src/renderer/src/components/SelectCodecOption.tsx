@@ -5,16 +5,15 @@ import { Autocomplete, TextField } from '@mui/material';
 import switchCodecOption from './SwitchCodecOption';
 
 interface SelectCodecOptionProps {
-    onCodecOptionChange: (codecOption: string[]) => void;
+    onCodecOptionChange: (codecOption: string) => void;
     videoCodec: string;
-    codecOption: string[]
 }
 
-const SelectCodecOption: React.FC<SelectCodecOptionProps> = ({ onCodecOptionChange, videoCodec, codecOption }) => {
+const SelectCodecOption: React.FC<SelectCodecOptionProps> = ({ onCodecOptionChange, videoCodec }) => {
     
     const handleOption = (_event: React.SyntheticEvent<Element, Event>, selectedValue) => {
-        onCodecOptionChange([...codecOption, selectedValue.id]);
-        window.myAPI.selectCodecOption([...codecOption, selectedValue.id])
+        onCodecOptionChange(selectedValue.id);
+        window.myAPI.selectOption( selectedValue.id)
     };
 
     return (

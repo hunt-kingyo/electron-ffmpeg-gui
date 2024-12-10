@@ -2,7 +2,7 @@ import {useState} from 'react'
 
 interface EncodeOptions {
     videoCodec:string;
-    codecOption:string[];
+    codecOption:string;
     containerFormat:string;
     pixelFormat:string;
     videoBitrate:string;
@@ -13,7 +13,7 @@ interface EncodeOptions {
 interface UseEncodeOptionsReturn {
     encodeOptions: EncodeOptions;
     setVideoCodec: (videocodec: string) => void;
-    setCodecOption: (codecOption: string[]) => void;
+    setCodecOption: (codecOption: string) => void;
     setContainerFormat: (containerFormat: string) => void;
     setPixelFormat: (pixelFormat: string) => void;
     setVideoBitrate: (videoBitrate: string) => void;
@@ -23,7 +23,7 @@ interface UseEncodeOptionsReturn {
 
 const initialState: EncodeOptions = {
     videoCodec: '',
-    codecOption: [],
+    codecOption: '',
     containerFormat: '',
     pixelFormat: '',
     videoBitrate: '',
@@ -38,7 +38,7 @@ export const useEncodeOptions = (): UseEncodeOptionsReturn => {
         setEncodeOptions(prev => ({ ...prev, videoCodec }));
     };
 
-    const setCodecOption = (codecOption: string[]) => {
+    const setCodecOption = (codecOption: string) => {
         setEncodeOptions(prev => ({ ...prev, codecOption }));
     };
 

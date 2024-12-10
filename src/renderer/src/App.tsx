@@ -52,8 +52,8 @@ function App(): JSX.Element {
               <option value="_converted">_converted</option>
               <option value="_FFmpegGUI">_FFmpegGUI</option>
             </select>
-            <SelectCodecOption onCodecOptionChange={setCodecOption} videoCodec={encodeOptions.videoCodec} codecOption={encodeOptions.codecOption}/>
-            {encodeOptions.codecOption[0]}
+            <SelectCodecOption onCodecOptionChange={setCodecOption} videoCodec={encodeOptions.videoCodec} />
+            {encodeOptions.codecOption}
             <br />
             <SelectContainerFormat onContainerFormatChange={setContainerFormat} videoCodec={encodeOptions.videoCodec} />
             {encodeOptions.containerFormat}
