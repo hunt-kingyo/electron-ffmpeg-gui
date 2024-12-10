@@ -1,12 +1,27 @@
 import Button from '@mui/material/Button'
 import React from 'react'
 
-type EncodeButtonProps = object
+interface EncodeOptions {
+  videoCodec:string;
+  codecOption:string;
+  containerFormat:string;
+  pixelFormat:string;
+  videoBitrate:string;
+  suffix: string;
+  outputFolder:string;
+}
 
-const EncodeButton: React.FC<EncodeButtonProps> = () => {
+interface EncodeButtonProps {
+  encodeOptions: EncodeOptions;
+}
+
+const EncodeButton: React.FC<EncodeButtonProps> = ({ encodeOptions }) => {
+  const handleEncode = () => {
+    window.myAPI.startFfmpeg(encodeOptions)
+  }
   return (
     <>
-      <Button variant="contained" color="primary" onClick={window.myAPI.startFfmpeg}>
+      <Button variant="contained" color="primary" onClick={handleEncode}>
         Encode
       </Button>
     </>

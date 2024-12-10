@@ -60,7 +60,7 @@ function App(): JSX.Element {
             <br />
             <OutputButton onOutputFolderChange={setOutputFolder} />
             <div className='text'>{encodeOptions.outputFolder}</div>
-            <EncodeButton />
+            <EncodeButton encodeOptions={encodeOptions}/>
             <p id="checkFilePath" />
             <p id="ffmpegLog" />
             </Stack>

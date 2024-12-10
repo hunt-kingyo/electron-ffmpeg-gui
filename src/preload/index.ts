@@ -1,6 +1,16 @@
 import { ipcRenderer, contextBridge } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
+interface EncodeOptions {
+  videoCodec:string;
+  codecOption:string;
+  containerFormat:string;
+  pixelFormat:string;
+  videoBitrate:string;
+  suffix: string;
+  outputFolder:string;
+}
+
 // Custom APIs for renderer
 const myAPI =  {
   openDialog: () => ipcRenderer.invoke('open-dialog'),
@@ -10,7 +20,7 @@ const myAPI =  {
   selectSuffix: (suffix: string) => ipcRenderer.send('select-suffix', suffix),
   selectOption: (option: string) => ipcRenderer.send('select-option', option),
   selectFormat: (format: string) => ipcRenderer.send('select-format', format),
-  startFfmpeg: () => ipcRenderer.send('start-ffmpeg'),
+  startFfmpeg: (encodeOptions: EncodeOptions) => ipcRenderer.send('start-ffmpeg', encodeOptions),
   checkFilePath: (callback) =>
     ipcRenderer.on('check-file-path', (_event, message: string) => {
       callback(message)

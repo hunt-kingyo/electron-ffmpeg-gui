@@ -29,9 +29,11 @@ function createWindow(): void {
   const inputFileList: string[] = []
   let outputFolder: string = ''
   let videoCodec: string = ''
+  let option: string = ''
   let suffix: string = ''
   let format: string = ''
   //オプションは['-option param',]または['-option', 'param',]の形で渡す
+  //文字列が送られてくるが、どうせ配列でffmpegに渡す必要があるためこうした
   let options: string[] = []
   //const bitrate: string = ''
   //string型は値が更新されないためここではあくまでstring型の変数しか定義しない
@@ -87,7 +89,7 @@ function createWindow(): void {
 
   ipcMain.on('select-option', async(_e, selectedOption): Promise<void> => {
     //配列を浅くコピーする
-    options = [...selectedOption]
+    option = selectedOption
     console.log(options)
   })
 
@@ -120,6 +122,7 @@ function createWindow(): void {
     //値を更新
     outputFilePath =
       join(outputFolder, basename(inputFilePath, extname(inputFilePath))) + suffix + getExt(format)
+    options = [option]
     if (existsSync(outputFilePath)) {
       mainWindow.webContents.send(
         'check-file-path',
