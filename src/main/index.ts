@@ -28,7 +28,7 @@ function createWindow(): void {
   //入力ファイルのリスト
   const inputFileList: string[] = []
   let outputFolder: string = ''
-  let videoCodec: string = 'libx264'
+  let videoCodec: string = ''
   let suffix: string = ''
   let format: string = ''
   //オプションは['-option param',]または['-option', 'param',]の形で渡す

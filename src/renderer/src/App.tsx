@@ -7,7 +7,6 @@ import SelectContainerFormat from './components/SelectContainerFormat'
 import EncodeButton from './components/EncodeButton'
 import OutputButton from './components/OutputButton'
 import { useEncodeOptions } from './components/useEncodeOptions'
-import codecOptionList from './datas/CodecOptionList'
 
 function App(): JSX.Element {
 
