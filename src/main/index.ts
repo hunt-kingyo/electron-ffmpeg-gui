@@ -41,6 +41,7 @@ function createWindow(): void {
   let options: string[] = []
   let outputFilePath = ''
   let checkPathResult = ''
+  let intProgress:number = 0
 
   ipcMain.handle('open-multiple-dialog', async () => {
     return (
@@ -89,10 +90,14 @@ function createWindow(): void {
       suffix: suffix,
       outputFolder: outputFolder,
     } = encodeOptions
-    //
      
     
     const encode = (inputFilePath: string) => {
+      if (outputFolder == ''){
+        console.log('output folder is not selected.')
+        mainWindow.webContents.send('ffmpeg-log', 'output folder is not selected.')
+        return
+      }
       outputFilePath =
         join(outputFolder, basename(inputFilePath, extname(inputFilePath))) + suffix + getExt(format)
       options = [option]
@@ -101,26 +106,17 @@ function createWindow(): void {
         checkPathResult = 
           `file already exists: ${outputFilePath}\n\
           select suffix, or other output folder.\n`
-        mainWindow.webContents.send('check-file-path', checkPathResult)
+        mainWindow.webContents.send('ffmpeg-log', checkPathResult)
         console.log('file already exists\n')
       } else {
-        checkPathResult = 
-          `--selected option--\n\
-          inputFilePath: ${inputFilePath}\n\
-          videoCodec: ${videoCodec}\n\
-          
-          suffix: ${suffix}\n\
-          outputFilePath: ${outputFilePath}\n`
-        mainWindow.webContents.send('check-file-path', checkPathResult)
-        console.log(checkPathResult)
-
         ffmpeg(inputFilePath)
           .videoCodec(videoCodec)
           .outputOption(options)
           .format(format)
           .on('progress', function (progress) {
-            console.log('Processing: ' + progress.percent + '% done')
-            mainWindow.webContents.send('ffmpeg-log', 'Processing: ' + progress.percent + '% done')
+            intProgress = parseInt(progress.percent)
+            console.log('Processing: ' + intProgress + '% done')
+            mainWindow.webContents.send('ffmpeg-log', 'Processing: ' + intProgress + '% done')
           })
           .on('error', function (err) {
             console.log('An error occurred: ' + err.message)
@@ -152,7 +148,6 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
-  inputFileList.forEach(inputFileList => encode(inputFilelist));
 }
 
 // This method will be called when Electron has finished
