@@ -7,6 +7,7 @@ import EncodeButton from './components/EncodeButton'
 import OutputButton from './components/OutputButton'
 import { useEncodeOptions } from './components/useEncodeOptions'
 import { Box, Grid2, Stack } from '@mui/material'
+import SelectSuffix from './components/SelectSuffix'
 
 function App(): JSX.Element {
 
@@ -18,8 +19,6 @@ function App(): JSX.Element {
     setVideoCodec,
     setCodecOption,
     setContainerFormat,
-    setPixelFormat,
-    setVideoBitrate,
     setSuffix,
     setOutputFolder
   } = useEncodeOptions();
@@ -36,28 +35,18 @@ function App(): JSX.Element {
           </Stack>
         </Grid2>
         <Grid2 size={4}>
-          <Stack spacing={0.5}>
+          <Stack spacing={1}>
           <SelectVideoCodec onVideoCodecChange={setVideoCodec} videoCodec={encodeOptions.videoCodec} />
           {encodeOptions.videoCodec}
-          <br />
-          <select id="suffixSelect">
-            <option value="">(none)</option>
-            <option value="_codec">_codec</option>
-            <option value="_bitrate">_bitrate</option>
-            <option value="_converted">_converted</option>
-            <option value="_FFmpegGUI">_FFmpegGUI</option>
-          </select>
           <SelectCodecOption onCodecOptionChange={setCodecOption} videoCodec={encodeOptions.videoCodec} />
-          {encodeOptions.codecOption}
-          <br />
+          {encodeOptions.codecOption.map((option) => <div key={option}>{option}</div>)}
           <SelectContainerFormat onContainerFormatChange={setContainerFormat} videoCodec={encodeOptions.videoCodec} />
           {encodeOptions.containerFormat}
-          <br />
+          <SelectSuffix onSuffixChange={setSuffix} suffix={encodeOptions.suffix} videoCodec={encodeOptions.videoCodec} />
           <OutputButton onOutputFolderChange={setOutputFolder} />
-          <div className='text'>{encodeOptions.outputFolder}</div>
+          {encodeOptions.outputFolder}
           <EncodeButton encodeOptions={encodeOptions}/>
           <p id="checkFilePath" />
-          
           </Stack>
         </Grid2>
       </Grid2>

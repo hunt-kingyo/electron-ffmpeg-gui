@@ -1,8 +1,7 @@
 import codecOptionList from '../datas/CodecOptionList'
 
 type CodecLists = {
-    libx264: string[];
-    dnxhd: string[];
+    codec: string[];
 };
 
 const switchCodecOption = (selectedCodec) => {

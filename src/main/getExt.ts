@@ -7,6 +7,7 @@ const  FormatExtMap = {
     "mov" : ".mov",
     "mxf" : ".mxf",
     "mxf_opatom" : ".mxf",
+    "webm" : ".webm"
 }
 
 type ExtensionMap = typeof FormatExtMap

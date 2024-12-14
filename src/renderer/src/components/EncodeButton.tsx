@@ -3,10 +3,8 @@ import React from 'react'
 
 interface EncodeOptions {
   videoCodec:string;
-  codecOption:string;
+  codecOption:string[];
   containerFormat:string;
-  pixelFormat:string;
-  videoBitrate:string;
   suffix: string;
   outputFolder:string;
 }

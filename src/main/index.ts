@@ -9,7 +9,7 @@ import getExt from './getExt'
 
 interface EncodeOptions {
   videoCodec:string;
-  codecOption:string;
+  codecOption:string[];
   containerFormat:string;
   pixelFormat:string;
   videoBitrate:string;
@@ -85,8 +85,6 @@ function createWindow(): void {
       videoCodec: videoCodec, 
       codecOption: option, 
       containerFormat: format,
-      pixelFormat: pix_fmt,
-      videoBitrate: v_bitrate,
       suffix: suffix,
       outputFolder: outputFolder,
     } = encodeOptions
@@ -100,8 +98,8 @@ function createWindow(): void {
       }
       outputFilePath =
         join(outputFolder, basename(inputFilePath, extname(inputFilePath))) + suffix + getExt(format)
-      options = [option]
-
+      //将来的にユーザーがオプションを任意に追加する機能を付けるために一度配列をコピーしている
+        options = [...option]
       if (existsSync(outputFilePath)) {
         checkPathResult = 
           `file already exists: ${outputFilePath}\n\

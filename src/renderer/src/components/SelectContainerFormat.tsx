@@ -1,7 +1,8 @@
-import * as React from 'react'
+import * as React from 'react';
 import Box from '@mui/material/Box';
-import { Autocomplete, TextField } from '@mui/material';
+import { Autocomplete, TextField, FormControl } from '@mui/material';
 import SwitchCodecFormat from './SwitchCodecFormat';
+
 
 interface SelectContainerFormatProps {
     onContainerFormatChange: (containerFormat: string) => void;
@@ -17,15 +18,14 @@ const SelectContainerFormat: React.FC<SelectContainerFormatProps> = ({ onContain
 
     return (
         <Box sx={{ minWidth: 120 }}>
-            {/*<FormControl fullWidth>*/}
+            <FormControl fullWidth>
                 <Autocomplete 
                     disablePortal
                     onChange={handleFormat}
                     options={SwitchCodecFormat(videoCodec)}
-                    sx={{width: 300}}
                     renderInput={(params) => <TextField {...params} label="Format" />}
                 />
-            {/*</FormControl>*/}
+            </FormControl>
         </Box>
     )
 }

@@ -1,8 +1,7 @@
 import codecFormatList from '../datas/CodecFormatList'
 
 type CodecLists = {
-    libx264: string[];
-    dnxhd: string[];
+    codec: string;
 };
 
 const SwitchCodecFormat = (selectedCodec) => {
@@ -10,7 +9,7 @@ const SwitchCodecFormat = (selectedCodec) => {
     if (selectedCodec != '') {
         return codecFormatList[codecName]
     }else{
-        return [{label: 'Select codec first', id: ''}]
+        return [{label: 'Select codec first', option: ''}]
     }
 
 }
