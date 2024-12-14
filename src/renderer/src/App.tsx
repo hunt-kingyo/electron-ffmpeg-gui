@@ -14,7 +14,7 @@ function App(): JSX.Element {
   const [inputFilePath, setInputFile] = React.useState<string>('')
   const [inputFileList, setInputList] = React.useState<string[]>([])
   //const [ffmpegLog, setffmpegLog] = React.useState<string>('')
-  const inputListMap = inputFileList.map((filePath) => <li key={filePath}>{filePath}</li>)
+  const inputListMap = inputFileList ? inputFileList.map((filePath) => <li key={filePath}>{filePath}</li>) : 'file is not selected'
 
   const {
     encodeOptions,
@@ -36,8 +36,9 @@ function App(): JSX.Element {
               <ImportButton  setInputFile={setInputFile} />
               <div className="text">{`Input: ${inputFilePath}`}</div>
               <MultiImportButton setInputList={setInputList} />
-              <div className="text">{inputListMap}</div>
-              <Box sx={{height:400, bgcolor:'#4c4c4c'}}>filepath list</Box>
+              <Box sx={{height:400, bgcolor:'#4c4c4c'}}>
+                <div className="text">{inputListMap}</div>
+              </Box>
             </Stack>
           </Grid2>
           <Grid2 size={4}>
