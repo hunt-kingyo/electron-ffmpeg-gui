@@ -1,5 +1,4 @@
 import React from 'react'
-import ImportButton from './components/ImportButton'
 import MultiImportButton from './components/MultiImportButton'
 import SelectVideoCodec from './components/SelectVideoCodec'
 import SelectCodecOption from './components/SelectCodecOption'
@@ -11,7 +10,6 @@ import { Box, Grid2, Stack } from '@mui/material'
 
 function App(): JSX.Element {
 
-  const [inputFilePath, setInputFile] = React.useState<string>('')
   const [inputFileList, setInputList] = React.useState<string[]>([])
   //const [ffmpegLog, setffmpegLog] = React.useState<string>('')
   const inputListMap = inputFileList ? inputFileList.map((filePath) => <li key={filePath}>{filePath}</li>) : 'file is not selected'
@@ -33,8 +31,6 @@ function App(): JSX.Element {
         <Grid2 container spacing={2}>
           <Grid2 size={8}>
             <Stack spacing={0.5}>
-              <ImportButton  setInputFile={setInputFile} />
-              <div className="text">{`Input: ${inputFilePath}`}</div>
               <MultiImportButton setInputList={setInputList} />
               <Box sx={{height:400, bgcolor:'#4c4c4c'}}>
                 <div className="text">{inputListMap}</div>

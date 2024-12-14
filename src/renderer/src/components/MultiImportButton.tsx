@@ -12,7 +12,7 @@ const MultiImportButton: React.FC<MultiImportButtonProps> = ({ setInputList }) =
   return (
     <>
       <Button variant="contained" color="primary" id="button" onClick={handleFileList}>
-        Select multiple file
+        Select files
       </Button>
     </>
   )
