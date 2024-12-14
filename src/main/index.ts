@@ -33,22 +33,14 @@ function createWindow(): void {
     }
   })
 
-  //単一の入力ファイルのパスを保存するための変数
-  let inputFilePath: string = ''
   //入力ファイルのリスト
   const inputFileList: string[] = []
   let outputFolder: string = ''
-  let videoCodec1: string = ''
-  let option1: string = ''
-  let suffix1: string = ''
-  let format1: string = ''
   //オプションは['-option param',]または['-option', 'param',]の形で渡す
   //文字列が送られてくるが、どうせ配列でffmpegに渡す必要があるためこうした
   let options: string[] = []
-  //const bitrate: string = ''
-  //string型は値が更新されないためここではあくまでstring型の変数しか定義しない
-  //ラッパーオブジェクトも考えたがうまく機能しなかった
   let outputFilePath = ''
+  let checkPathResult = ''
 
   ipcMain.handle('open-multiple-dialog', async () => {
     return (
@@ -70,47 +62,6 @@ function createWindow(): void {
         })
         .catch((err) => console.error(err))
     )
-  })
-
-  ipcMain.handle('open-dialog', async () => {
-    return (
-      dialog
-        // ファイル選択ダイアログを表示する
-        .showOpenDialog(mainWindow, {
-          properties: ['openFile']
-        })
-        .then((result) => {
-          // キャンセルボタンが押されたとき
-          if (result.canceled) return ''
-
-          inputFilePath = result.filePaths[0]
-          console.log(result.filePaths[0])
-          // 選択されたファイルの絶対パスを返す
-          return result.filePaths[0]
-        })
-        .catch((err) => console.error(err))
-    )
-  })
-
-  ipcMain.on('select-codec', async (_e, codec): Promise<void> => {
-    videoCodec1 = codec
-    console.log(videoCodec1)
-  })
-
-  ipcMain.on('select-option', async(_e, selectedOption): Promise<void> => {
-    //配列を浅くコピーする
-    option1 = selectedOption
-    console.log(option1)
-  })
-
-  ipcMain.on('select-format', async(_e, selectedFormat): Promise<void> => {
-    format1 = selectedFormat
-    console.log(format1)
-  })
-
-  ipcMain.on('select-suffix', async (_e, suffixSelected: string): Promise<void> => {
-    suffix1 = suffixSelected
-    console.log(suffix1)
   })
 
   ipcMain.handle('open-output-dialog', async () => {
@@ -138,57 +89,51 @@ function createWindow(): void {
       suffix: suffix,
       outputFolder: outputFolder,
     } = encodeOptions
-    //値を更新
-    outputFilePath =
-      join(outputFolder, basename(inputFilePath, extname(inputFilePath))) + suffix + getExt(format)
-    options = [option]
-    if (existsSync(outputFilePath)) {
-      mainWindow.webContents.send(
-        'check-file-path',
-        `file already exists: ${outputFilePath}\n\
-        select suffix, or other output folder.\n`
-      )
-      console.log('file already exists\n')
-    } else {
-      mainWindow.webContents.send(
-        'check-file-path',
-        `--selected option--\n\
-        inputFilePath: ${inputFilePath}\n\
-        videoCodec: ${videoCodec}\n\
-        
-        suffix: ${suffix}\n\
-        outputFilePath: ${outputFilePath}\n`
-      )
-      console.log(
-        'check-file-path',
-        `--selected option--\n\
-        inputFilePath: ${inputFilePath}\n\
-        videoCodec: ${videoCodec}\n\
-        
-        suffix: ${suffix}\n\
-        outputFilePath: ${outputFilePath}\n`
-      )
-      ffmpeg(inputFilePath)
-        .videoCodec(videoCodec)
-        //やるならcontainerではなく別の変数に変更
-        .outputOption(options)
-        .format(format)
-        .on('progress', function (progress) {
-          console.log('Processing: ' + progress.percent + '% done')
-          mainWindow.webContents.send('ffmpeg-log', 'Processing: ' + progress.percent + '% done')
-        })
-        .on('error', function (err) {
-          console.log('An error occurred: ' + err.message)
-          mainWindow.webContents.send('ffmpeg-log', 'An error occurred: ' + err.message)
-          //エラー文をどこかに送るなら
-          //mainWindow.webContents.send('ffmpeg-log', 'An error occurred: ' + err.message);
-        })
-        .on('end', function () {
-          console.log('Processing finished !')
-          mainWindow.webContents.send('ffmpeg-log', 'Processing finished !')
-        })
-        .save(outputFilePath)
+    //
+     
+    
+    const encode = (inputFilePath: string) => {
+      outputFilePath =
+        join(outputFolder, basename(inputFilePath, extname(inputFilePath))) + suffix + getExt(format)
+      options = [option]
+
+      if (existsSync(outputFilePath)) {
+        checkPathResult = 
+          `file already exists: ${outputFilePath}\n\
+          select suffix, or other output folder.\n`
+        mainWindow.webContents.send('check-file-path', checkPathResult)
+        console.log('file already exists\n')
+      } else {
+        checkPathResult = 
+          `--selected option--\n\
+          inputFilePath: ${inputFilePath}\n\
+          videoCodec: ${videoCodec}\n\
+          
+          suffix: ${suffix}\n\
+          outputFilePath: ${outputFilePath}\n`
+        mainWindow.webContents.send('check-file-path', checkPathResult)
+        console.log(checkPathResult)
+
+        ffmpeg(inputFilePath)
+          .videoCodec(videoCodec)
+          .outputOption(options)
+          .format(format)
+          .on('progress', function (progress) {
+            console.log('Processing: ' + progress.percent + '% done')
+            mainWindow.webContents.send('ffmpeg-log', 'Processing: ' + progress.percent + '% done')
+          })
+          .on('error', function (err) {
+            console.log('An error occurred: ' + err.message)
+            mainWindow.webContents.send('ffmpeg-log', 'An error occurred: ' + err.message)
+          })
+          .on('end', function () {
+            console.log('Processing finished !')
+            mainWindow.webContents.send('ffmpeg-log', 'Processing finished !')
+          })
+          .save(outputFilePath)
+      }
     }
+    inputFileList.forEach(inputFileList => encode(inputFileList));
   })
 
   mainWindow.on('ready-to-show', () => {
@@ -207,6 +152,7 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+  inputFileList.forEach(inputFileList => encode(inputFilelist));
 }
 
 // This method will be called when Electron has finished

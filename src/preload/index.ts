@@ -13,7 +13,6 @@ interface EncodeOptions {
 
 // Custom APIs for renderer
 const myAPI =  {
-  openDialog: () => ipcRenderer.invoke('open-dialog'),
   openMultipleDialog: () => ipcRenderer.invoke('open-multiple-dialog'),
   openOutputDialog: () => ipcRenderer.invoke('open-output-dialog'),
   selectCodec: (codec: string) => ipcRenderer.send('select-codec', codec),
