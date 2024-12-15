@@ -27,16 +27,14 @@ function App(): JSX.Element {
 
   const useMultiKey = (triggerValue: string) => {
     //初期値をユニークに指定しないとインクリメントしてもkeyが被る
-    const [keys, setKeys] = React.useState<number[]>([0,1]);
-
+    const [keys, setKeys] = React.useState<number[]>([0,1,2]);
     useEffect(() => {
       setKeys(prevKeys => prevKeys.map(key => key + 1));
     }, [triggerValue]);
-
     return keys;
   }
 
-  const [codecOptionKey, containerFormatKey] = useMultiKey(encodeOptions.videoCodec)
+  const [codecOptionKey, containerFormatKey, suffixKey] = useMultiKey(encodeOptions.videoCodec)
 
 
   return (
@@ -53,11 +51,10 @@ function App(): JSX.Element {
           <SelectVideoCodec onVideoCodecChange={setVideoCodec} videoCodec={encodeOptions.videoCodec} />
           <SelectCodecOption key={codecOptionKey} onCodecOptionChange={setCodecOption} videoCodec={encodeOptions.videoCodec} />
           <SelectContainerFormat key={containerFormatKey} onContainerFormatChange={setContainerFormat} videoCodec={encodeOptions.videoCodec} />
-          <SelectSuffix onSuffixChange={setSuffix} suffix={encodeOptions.suffix} videoCodec={encodeOptions.videoCodec} />
+          <SelectSuffix key={suffixKey} onSuffixChange={setSuffix} suffix={encodeOptions.suffix} videoCodec={encodeOptions.videoCodec} />
           <OutputButton onOutputFolderChange={setOutputFolder} />
           <OptionDisplay encodeOptions={encodeOptions} />
           <EncodeButton encodeOptions={encodeOptions}/>
-          <p id="checkFilePath" />
           </Stack>
         </Grid2>
       </Grid2>

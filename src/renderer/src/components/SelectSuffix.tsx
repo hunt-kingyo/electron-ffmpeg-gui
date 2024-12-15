@@ -12,7 +12,7 @@ const SelectSuffix: React.FC<SelectSuffixProps> = ({ onSuffixChange, suffix, vid
     const handleSuffix = (event: SelectChangeEvent) => {
         onSuffixChange(event.target.value as string);
     }
-    const codecSuffix:string = '_'+ videoCodec
+    const codecSuffix:string = '_'+ (videoCodec?videoCodec:'(name of encoder)')
 
     return (
         <Box sx={{ minWidth: 120}}>
