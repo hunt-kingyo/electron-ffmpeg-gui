@@ -7,12 +7,11 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import getExt from './getExt'
 
-interface EncodeOptions {
+interface AllOptions {
+  inputFileList:string[];
   videoCodec:string;
   codecOption:string[];
   containerFormat:string;
-  pixelFormat:string;
-  videoBitrate:string;
   suffix: string;
   outputFolder:string;
 }
@@ -23,7 +22,7 @@ function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,
-    height: 670,
+    height: 700,
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
@@ -34,7 +33,6 @@ function createWindow(): void {
   })
 
   //入力ファイルのリスト
-  const inputFileList: string[] = []
   let outputFolder: string = ''
   //オプションは['-option param',]または['-option', 'param',]の形で渡す
   //文字列が送られてくるが、どうせ配列でffmpegに渡す必要があるためこうした
@@ -44,6 +42,7 @@ function createWindow(): void {
   let intProgress:number = 0
 
   ipcMain.handle('open-multiple-dialog', async () => {
+    const inputList:string[] = []
     return (
       dialog
         // ファイル選択ダイアログを表示する
@@ -56,10 +55,10 @@ function createWindow(): void {
 
           //ファイルパスをinputFileListに保存
           result.filePaths.forEach((inputFilePath) => {
-            inputFileList.push(inputFilePath)
+            inputList.push(inputFilePath)
           })
           // 選択されたファイルの絶対パスのリストを返す
-          return inputFileList
+          return inputList
         })
         .catch((err) => console.error(err))
     )
@@ -80,14 +79,15 @@ function createWindow(): void {
       .catch((err) => console.error(err))
   })
 
-  ipcMain.on('start-ffmpeg', async (_e, encodeOptions: EncodeOptions) => {
+  ipcMain.on('start-ffmpeg', async (_e, allOptions: AllOptions) => {
     const {
+      inputFileList: inputFileList,
       videoCodec: videoCodec, 
       codecOption: option, 
       containerFormat: format,
       suffix: suffix,
       outputFolder: outputFolder,
-    } = encodeOptions
+    } = allOptions
      
     
     const encode = (inputFilePath: string) => {

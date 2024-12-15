@@ -1,12 +1,11 @@
 import { ipcRenderer, contextBridge } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
-interface EncodeOptions {
+interface AllOptions {
+  inputFileList:string[];
   videoCodec:string;
   codecOption:string;
   containerFormat:string;
-  pixelFormat:string;
-  videoBitrate:string;
   suffix: string;
   outputFolder:string;
 }
@@ -19,15 +18,18 @@ const myAPI =  {
   selectSuffix: (suffix: string) => ipcRenderer.send('select-suffix', suffix),
   selectOption: (option: string) => ipcRenderer.send('select-option', option),
   selectFormat: (format: string) => ipcRenderer.send('select-format', format),
-  startFfmpeg: (encodeOptions: EncodeOptions) => ipcRenderer.send('start-ffmpeg', encodeOptions),
-  checkFilePath: (callback) =>
-    ipcRenderer.on('check-file-path', (_event, message: string) => {
-      callback(message)
-    }),
-  ffmpegLog: (callback) =>
-    ipcRenderer.on('ffmpeg-log', (_event, message: string) => {
-      callback(message)
-    })
+  startFfmpeg: (allOptions: AllOptions) => ipcRenderer.send('start-ffmpeg', allOptions),
+  ffmpegLog: (callback: (message: string) => void) => {
+    const logHandler = (_e, message: string) => {
+      callback(message);
+    }
+
+    ipcRenderer.on('ffmpeg-log', logHandler)
+
+    return () => {
+      ipcRenderer.removeListener('ffmpeg-log', logHandler);
+    }
+  }
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

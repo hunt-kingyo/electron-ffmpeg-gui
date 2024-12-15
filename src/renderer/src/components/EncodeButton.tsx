@@ -9,13 +9,28 @@ interface EncodeOptions {
   outputFolder:string;
 }
 
-interface EncodeButtonProps {
-  encodeOptions: EncodeOptions;
+interface allOptions {
+  inputFileList:string[]
+  videoCodec:string;
+  codecOption:string[];
+  containerFormat:string;
+  suffix: string;
+  outputFolder:string;
 }
 
-const EncodeButton: React.FC<EncodeButtonProps> = ({ encodeOptions }) => {
+interface EncodeButtonProps {
+  encodeOptions: EncodeOptions;
+  inputFileList: string[];
+}
+
+
+const EncodeButton: React.FC<EncodeButtonProps> = ({ encodeOptions, inputFileList }) => {
   const handleEncode = () => {
-    window.myAPI.startFfmpeg(encodeOptions)
+    const allOptions:allOptions = structuredClone(encodeOptions)
+    allOptions.inputFileList = inputFileList
+    
+
+    window.myAPI.startFfmpeg(allOptions)
   }
   return (
     <>

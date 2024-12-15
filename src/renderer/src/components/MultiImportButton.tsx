@@ -8,9 +8,10 @@ type MultiImportButtonProps = {
 
 const MultiImportButton: React.FC<MultiImportButtonProps> = ({ inputFileList, setInputList }) => {
   const handleFileList= async () => {
-    const files: string[] = await window.myAPI.openMultipleDialog();
+    let files: string[] = await window.myAPI.openMultipleDialog();
     //重複して追加しないよう、すでに配列に入っているファイルパスを除外
     setInputList((prevList) => [...prevList, ...files.filter((item) => !inputFileList.includes(item))])
+    files = []
   }
   return (
     <>

@@ -9,7 +9,8 @@ import OutputButton from './components/OutputButton'
 import OptionDisplay from './components/OptionDisplay'
 import EncodeButton from './components/EncodeButton'
 import { useEncodeOptions } from './components/useEncodeOptions'
-import { Grid2, Stack, Box } from '@mui/material'
+import { Box, Button, Grid2, Stack } from '@mui/material'
+import FFmpegLogDisplay from './components/FfmpegLogDisplay'
 
 
 function App(): JSX.Element {
@@ -27,14 +28,14 @@ function App(): JSX.Element {
 
   const useMultiKey = (triggerValue: string) => {
     //初期値をユニークに指定しないとインクリメントしてもkeyが被る
-    const [keys, setKeys] = React.useState<number[]>([0,1,2]);
+    const [keys, setKeys] = React.useState<number[]>([0,1,2,3]);
     useEffect(() => {
       setKeys(prevKeys => prevKeys.map(key => key + 1));
     }, [triggerValue]);
     return keys;
   }
 
-  const [codecOptionKey, containerFormatKey, suffixKey] = useMultiKey(encodeOptions.videoCodec)
+  const [inputFileKey, codecOptionKey, containerFormatKey, suffixKey] = useMultiKey(encodeOptions.videoCodec)
 
 
   return (
@@ -42,7 +43,15 @@ function App(): JSX.Element {
       <Grid2 container spacing={2}>
         <Grid2 size={8}>
           <Stack spacing={1}>
-            <MultiImportButton inputFileList={inputFileList} setInputList={setInputList} />
+            <Grid2 container spacing={2}>
+              <Grid2 size={"auto"}>
+                <MultiImportButton key={inputFileKey} inputFileList={inputFileList} setInputList={setInputList} />
+              </Grid2>
+              <Grid2 size={"grow"}><Box></Box></Grid2>
+              <Grid2 size={"auto"}>
+                <Button variant="outlined" color="warning" onClick={() => setInputList([])}>Reset File Select</Button>
+              </Grid2>
+            </Grid2>
             <InputListDisplay inputFileList={inputFileList} setInputList={setInputList} />
           </Stack>
         </Grid2>
@@ -54,11 +63,11 @@ function App(): JSX.Element {
           <SelectSuffix key={suffixKey} onSuffixChange={setSuffix} suffix={encodeOptions.suffix} videoCodec={encodeOptions.videoCodec} />
           <OutputButton onOutputFolderChange={setOutputFolder} />
           <OptionDisplay encodeOptions={encodeOptions} />
-          <EncodeButton encodeOptions={encodeOptions}/>
+          <EncodeButton encodeOptions={encodeOptions} inputFileList={inputFileList}/>
           </Stack>
         </Grid2>
       </Grid2>
-      <Box sx={{flexGrow: 1, color:'4C4C4C' }}></Box>
+      <FFmpegLogDisplay />
       </Stack>
     </>
   )

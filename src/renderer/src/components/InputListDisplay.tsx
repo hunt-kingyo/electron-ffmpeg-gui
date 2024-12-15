@@ -1,16 +1,18 @@
 import React from 'react'
-import { Box, Paper, List, ListItem, ListItemText, Divider, IconButton, Typography } from '@mui/material'
-import ClearIcon from '@mui/icons-material/Clear'
+import { Box, Paper, List, ListItem, ListItemText, Divider, Typography } from '@mui/material'
+//import  IconButton from '@mui/material'
+//import ClearIcon from '@mui/icons-material/Clear'
 
 interface InputListDisplayProps {
     inputFileList: string[]
     setInputList: (inputFileList: string[]) => void;
 }
 
-const InputListDisplay: React.FC<InputListDisplayProps> = ({ inputFileList, setInputList }) => {
-    const deleteFile = (filePath: string) => {
-        setInputList(inputFileList.filter((path) => path !== filePath));
-    }
+const InputListDisplay: React.FC<InputListDisplayProps> = ({ inputFileList/*, setInputList*/ }) => {
+    /*const deleteFile = (filePath: string) => {
+        setInputList(inputFileList.filter((path) => path != filePath));
+        console.log(inputFileList)
+    }*/
     
     const style = {
         py: 0,
@@ -33,15 +35,7 @@ const InputListDisplay: React.FC<InputListDisplayProps> = ({ inputFileList, setI
                     <List sx={style}>
                         {inputFileList.map((filePath) => (
                             <React.Fragment key={filePath}>
-                                <ListItem
-                                    secondaryAction={
-                                        <IconButton 
-                                            onClick={() => deleteFile(filePath)}
-                                        >
-                                            <ClearIcon />
-                                        </IconButton>
-                                    }
-                                >
+                                <ListItem>
                                     <ListItemText primary={filePath} />
                                 </ListItem>
                                 <Divider component="li" />
@@ -59,3 +53,12 @@ const InputListDisplay: React.FC<InputListDisplayProps> = ({ inputFileList, setI
 }
 
 export default InputListDisplay
+
+//listitemを削除する機能の名残：listitemの<>内に記述
+/*secondaryAction={
+    <IconButton 
+        onClick={() => deleteFile(filePath)}
+    >
+        <ClearIcon />
+    </IconButton>
+}*/

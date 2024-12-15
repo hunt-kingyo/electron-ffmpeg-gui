@@ -28,7 +28,7 @@ const  codecFormatList = {
     ],
     prores_ks: [
         { label: "QuickTime / MOV", id: "mov" },
-        { label: "MXF OP1a", id: "mxf" },
+       // { label: "MXF OP1a", id: "mxf" },だめそう
     ]
 }
 
