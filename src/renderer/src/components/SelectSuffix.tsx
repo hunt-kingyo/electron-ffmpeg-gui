@@ -20,6 +20,7 @@ const SelectSuffix: React.FC<SelectSuffixProps> = ({ onSuffixChange, suffix, vid
                 <InputLabel id="select-suffix-label">Suffix</InputLabel>
                 <Select 
                     labelId='select-suffix-label'
+                    label='Suffix'
                     value={suffix}
                     onChange={handleSuffix}
                     >
