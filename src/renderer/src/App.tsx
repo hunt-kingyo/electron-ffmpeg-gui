@@ -9,7 +9,7 @@ import OutputButton from './components/OutputButton'
 import OptionDisplay from './components/OptionDisplay'
 import EncodeButton from './components/EncodeButton'
 import { useEncodeOptions } from './components/useEncodeOptions'
-import { Grid2, Stack } from '@mui/material'
+import { Grid2, Stack, Box } from '@mui/material'
 
 
 function App(): JSX.Element {
@@ -40,7 +40,7 @@ function App(): JSX.Element {
 
 
   return (
-    <>
+    <><Stack spacing={1}>
       <Grid2 container spacing={2}>
         <Grid2 size={8}>
           <Stack spacing={1}>
@@ -61,6 +61,8 @@ function App(): JSX.Element {
           </Stack>
         </Grid2>
       </Grid2>
+      <Box sx={{flexGrow: 1, color:'4C4C4C' }}></Box>
+      </Stack>
     </>
   )
 }

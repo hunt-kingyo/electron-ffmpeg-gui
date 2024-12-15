@@ -1,5 +1,6 @@
 import React from 'react'
-import { Box, Paper, List, ListItem, ListItemText, Divider, Button, Typography } from '@mui/material'
+import { Box, Paper, List, ListItem, ListItemText, Divider, IconButton, Typography } from '@mui/material'
+import ClearIcon from '@mui/icons-material/Clear'
 
 interface InputListDisplayProps {
     inputFileList: string[]
@@ -22,7 +23,7 @@ const InputListDisplay: React.FC<InputListDisplayProps> = ({ inputFileList, setI
         <Paper elevation={3} sx={{borderRadius: 2}}>
             <Box
                 sx={{
-                    height: 300,
+                    height: 360,
                     flexGrow: 1,
                     overflowY: 'auto',
                     paddingY: 1
@@ -34,13 +35,11 @@ const InputListDisplay: React.FC<InputListDisplayProps> = ({ inputFileList, setI
                             <React.Fragment key={filePath}>
                                 <ListItem
                                     secondaryAction={
-                                        <Button 
-                                            variant="outlined" 
-                                            color="error" 
+                                        <IconButton 
                                             onClick={() => deleteFile(filePath)}
                                         >
-                                            Remove
-                                        </Button>
+                                            <ClearIcon />
+                                        </IconButton>
                                     }
                                 >
                                     <ListItemText primary={filePath} />

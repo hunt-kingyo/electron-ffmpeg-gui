@@ -27,6 +27,7 @@
     "@emotion/styled": "^11.13.0",
     "@fontsource-variable/noto-sans-jp": "^5.1.0",
     "@fontsource/roboto": "^5.1.0",
+    "@mui/icons-material": "^6.2.0",
     "@mui/material": "^6.1.0",
     "electron-updater": "^6.3.4",
     "ffmpeg-static": "^5.2.0",
