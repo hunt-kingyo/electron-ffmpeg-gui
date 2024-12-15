@@ -44,7 +44,7 @@ function App(): JSX.Element {
       <Grid2 container spacing={2}>
         <Grid2 size={8}>
           <Stack spacing={1}>
-            <MultiImportButton setInputList={setInputList} />
+            <MultiImportButton inputFileList={inputFileList} setInputList={setInputList} />
             <InputListDisplay inputFileList={inputFileList} setInputList={setInputList} />
           </Stack>
         </Grid2>
