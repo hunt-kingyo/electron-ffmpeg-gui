@@ -1,4 +1,4 @@
-import { Paper, List, ListItem, ListItemText, Box, Divider } from '@mui/material';
+import { Paper, List, ListItem, ListItemText/*, Box, Divider*/ } from '@mui/material';
 import React from 'react'
 
 interface EncodeOptions {
@@ -22,13 +22,13 @@ const OptionDisplay: React.FC<OptionDisplayProps> = ({encodeOptions}) => {
         borderRadius: 2
     }
 
-    const codecOptionStyle = {
+    /*const codecOptionStyle = {
         height: "calc(1.5rem * 4)", // 1行の高さ (lineHeight) × 4行分
         overflowY: "auto",         // テキストが4行以上でも隠れるように
         lineHeight: "1.5rem",       // 行間
         display: "flex",            // 子要素の配置を柔軟に
         alignItems: "center",       // 中央揃え
-    }
+    }*/
 
     const outputFolderStyle = {
         height: "calc(1.5rem * 2)", // 1行の高さ (lineHeight) × 2行分

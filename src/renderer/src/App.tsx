@@ -10,7 +10,7 @@ import OptionDisplay from './components/OptionDisplay'
 import EncodeButton from './components/EncodeButton'
 import { useEncodeOptions } from './components/useEncodeOptions'
 import { Box, Button, Grid2, Stack } from '@mui/material'
-import FFmpegLogDisplay from './components/FfmpegLogDisplay'
+import FFmpegLogDisplay from './components/FFmpegLogDisplay'
 
 
 function App(): JSX.Element {

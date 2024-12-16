@@ -9,7 +9,7 @@ interface EncodeOptions {
   outputFolder:string;
 }
 
-interface allOptions {
+interface AllOptions {
   inputFileList:string[]
   videoCodec:string;
   codecOption:string[];
@@ -26,10 +26,11 @@ interface EncodeButtonProps {
 
 const EncodeButton: React.FC<EncodeButtonProps> = ({ encodeOptions, inputFileList }) => {
   const handleEncode = () => {
-    const allOptions:allOptions = structuredClone(encodeOptions)
-    allOptions.inputFileList = inputFileList
-    
-
+    const allOptions: AllOptions = {
+      ...encodeOptions,
+      codecOption: [...encodeOptions.codecOption], // 配列のディープコピー
+      inputFileList
+    };
     window.myAPI.startFfmpeg(allOptions)
   }
   return (
