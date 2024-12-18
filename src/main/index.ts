@@ -15,8 +15,9 @@ interface AllOptions {
   suffix: string;
   outputFolder:string;
 }
-
-ffmpeg.setFfmpegPath(ffmpegStatic)
+//ビルド後はasarのせいでうまくffmpegのパスが見つからないため、ビルド後にも上手く動作するよう変更
+//型安全性のため、ffmpegStaticがない時はundefinedになる
+ffmpeg.setFfmpegPath(ffmpegStatic ? ffmpegStatic.replace('app.asar', 'app.asar.unpacked'):undefined)
 
 function createWindow(): void {
   // Create the browser window.
