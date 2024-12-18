@@ -2,7 +2,8 @@ import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join, basename, extname } from 'path'
 import { existsSync } from 'fs'
 import ffmpeg from 'fluent-ffmpeg'
-import ffmpegStatic from 'ffmpeg-static'
+//import ffmpegStatic from 'ffmpeg-static'
+import ffmpegPath from '@ffmpeg-installer/ffmpeg'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import getExt from './getExt'
@@ -17,7 +18,7 @@ interface AllOptions {
 }
 //ビルド後はasarのせいでうまくffmpegのパスが見つからないため、ビルド後にも上手く動作するよう変更
 //型安全性のため、ffmpegStaticがない時はundefinedになる
-ffmpeg.setFfmpegPath(ffmpegStatic ? ffmpegStatic.replace('app.asar', 'app.asar.unpacked'):undefined)
+ffmpeg.setFfmpegPath(ffmpegPath ? ffmpegPath.path.replace('app.asar', 'app.asar.unpacked'):undefined)
 
 function createWindow(): void {
   // Create the browser window.
