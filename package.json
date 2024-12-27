@@ -6,7 +6,7 @@
   "main": "./out/main/index.js",
   "author": "hunt_kingyo (https://github.com/hunt-kingyo)",
   "repository": "https://github.com/hunt-kingyo/electron-ffmpeg-gui",
-  "license" : "GPL-3.0-only",
+  "license" : "GPL-3.0-or-later",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint . --fix",
