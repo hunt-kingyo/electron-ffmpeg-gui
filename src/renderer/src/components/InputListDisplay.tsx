@@ -1,18 +1,18 @@
 import React from 'react'
 import { Box, Paper, List, ListItem, ListItemText, Divider, Typography } from '@mui/material'
-//import  IconButton from '@mui/material'
-//import ClearIcon from '@mui/icons-material/Clear'
+import { IconButton } from '@mui/material'
+import ClearIcon from '@mui/icons-material/Clear'
 
 interface InputListDisplayProps {
     inputFileList: string[]
     setInputList: (inputFileList: string[]) => void;
 }
 
-const InputListDisplay: React.FC<InputListDisplayProps> = ({ inputFileList/*, setInputList*/ }) => {
-    /*const deleteFile = (filePath: string) => {
+const InputListDisplay: React.FC<InputListDisplayProps> = ({ inputFileList, setInputList }) => {
+    const deleteFile = (filePath: string) => {
         setInputList(inputFileList.filter((path) => path != filePath));
         console.log(inputFileList)
-    }*/
+    }
     
     const style = {
         py: 0,
@@ -35,7 +35,14 @@ const InputListDisplay: React.FC<InputListDisplayProps> = ({ inputFileList/*, se
                     <List sx={style}>
                         {inputFileList.map((filePath) => (
                             <React.Fragment key={filePath}>
-                                <ListItem>
+                                <ListItem secondaryAction={
+                                    <IconButton 
+                                        onClick={() => deleteFile(filePath)}
+                                    >
+                                        <ClearIcon />
+                                    </IconButton>
+                                }
+                                >
                                     <ListItemText primary={filePath} />
                                 </ListItem>
                                 <Divider component="li" />

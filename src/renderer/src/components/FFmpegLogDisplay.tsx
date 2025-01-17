@@ -30,35 +30,15 @@ const FFmpegLogDisplay: React.FC = () => {
   return (
     <Paper 
         elevation={3}
-        sx={{
-            height: 200,
-            display: 'flex',
-            flexDirection: 'column'
-        }}
+        sx={{ height: 200, display: 'flex', flexDirection: 'column' }}
     >
-        <Typography
-            variant='h6'
-            sx={{
-                p:2
-            }}
-        >
+        <Typography variant='h6' sx={{ p:2 }}>
             Logs
         </Typography>
 
-        <Box 
-            ref={logContainerRef}
-            sx={{
-                flexGrow:1,
-                overflowY: 'auto',
-                p:2
-            }}
-        >
+        <Box ref={logContainerRef} sx={{ flexGrow:1, overflowY: 'auto', p:2 }}>
             {ffmpegLog.map((log, index) => (
-                <Typography
-                    key={index}
-                    variant="body2"
-                    sx={{ mb: 1 }}
-                >
+                <Typography key={index} variant="body2" sx={{ mb: 1 }}>
                     {log}
                 </Typography>
             )
