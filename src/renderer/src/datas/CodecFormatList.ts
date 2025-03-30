@@ -21,6 +21,10 @@ const  codecFormatList = {
         { label: "MP4 (MPEG-4 Part14)", id:"mp4" },
         { label: "WebM", id: "webm" },
     ],
+    h264_nvenc: [
+        { label: "MP4 (MPEG-4 Part14)", id: "mp4" },
+        { label: "QuickTime / MOV", id: "mov" },
+    ],
     dnxhd:[
         { label: "QuickTime / MOV", id: "mov" },
         { label: "MXF OP1a", id: "mxf" },
