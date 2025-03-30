@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { JSX, useEffect } from 'react'
 import MultiImportButton from './components/MultiImportButton'
 import InputListDisplay from './components/InputListDisplay'
 import SelectVideoCodec from './components/SelectVideoCodec'
@@ -9,7 +9,7 @@ import OutputButton from './components/OutputButton'
 import OptionDisplay from './components/OptionDisplay'
 import EncodeButton from './components/EncodeButton'
 import { useEncodeOptions } from './components/useEncodeOptions'
-import { Box, Button, Grid2, Stack } from '@mui/material'
+import { Box, Button, Grid, Stack } from '@mui/material'
 import FFmpegLogDisplay from './components/FFmpegLogDisplay'
 
 
@@ -40,22 +40,22 @@ function App(): JSX.Element {
 
   return (
     <><Stack spacing={1}>
-      <Grid2 container spacing={2}>
-        <Grid2 size={8}>
+      <Grid container spacing={2}>
+        <Grid size={8}>
           <Stack spacing={1}>
-            <Grid2 container spacing={2}>
-              <Grid2 size={"auto"}>
+            <Grid container spacing={2}>
+              <Grid size={"auto"}>
                 <MultiImportButton key={inputFileKey} inputFileList={inputFileList} setInputList={setInputList} />
-              </Grid2>
-              <Grid2 size={"grow"}><Box></Box></Grid2>
-              <Grid2 size={"auto"}>
+              </Grid>
+              <Grid size={"grow"}><Box></Box></Grid>
+              <Grid size={"auto"}>
                 <Button variant="outlined" color="warning" onClick={() => setInputList([])}>Reset File Select</Button>
-              </Grid2>
-            </Grid2>
+              </Grid>
+            </Grid>
             <InputListDisplay inputFileList={inputFileList} setInputList={setInputList} />
           </Stack>
-        </Grid2>
-        <Grid2 size={4}>
+        </Grid>
+        <Grid size={4}>
           <Stack spacing={1}>
           <SelectVideoCodec onVideoCodecChange={setVideoCodec} videoCodec={encodeOptions.videoCodec} />
           <SelectCodecOption key={codecOptionKey} onCodecOptionChange={setCodecOption} videoCodec={encodeOptions.videoCodec} />
@@ -65,8 +65,8 @@ function App(): JSX.Element {
           <OptionDisplay encodeOptions={encodeOptions} />
           <EncodeButton encodeOptions={encodeOptions} inputFileList={inputFileList}/>
           </Stack>
-        </Grid2>
-      </Grid2>
+        </Grid>
+      </Grid>
       <FFmpegLogDisplay />
       </Stack>
     </>
