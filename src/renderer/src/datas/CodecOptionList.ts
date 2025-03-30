@@ -26,6 +26,9 @@ const codecOptionList = {
         { label: "-crf 20", option: ["-crf 20"] },
         { label: "-crf 30", option: ["-crf 30"] },
     ],
+    h264_nvenc: [
+        { label: "CQP 21", option: ["-cq 21", "-bf 3"] },
+    ],
     dnxhd: [
         {label: "DNxHR 444 with alpha", option: ["-profile 5", "-pix_fmt yuva444p10le"] }, 
         {label: "DNxHR HQX 10bit", option: ["-profile 4", "-pix_fmt yuv422p10le"]}, 
