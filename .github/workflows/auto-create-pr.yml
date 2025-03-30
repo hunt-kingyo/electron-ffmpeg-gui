@@ -9,6 +9,9 @@ env:
 
 jobs:
   create_pr:
+    permissions:
+      contents: read
+      pull-requests: write
     # ブランチが作成されただけならスキップ
     if: ${{ !github.event.created }}
     runs-on: ubuntu-latest
