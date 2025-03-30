@@ -1,12 +1,12 @@
 {
   "name": "electron-ffmpeg-gui",
   "productName": "Electron FFmpeg GUI",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "FFmpeg GUI for converting video codecs.",
   "main": "./out/main/index.js",
   "author": "hunt_kingyo (https://github.com/hunt-kingyo)",
   "repository": "https://github.com/hunt-kingyo/electron-ffmpeg-gui",
-  "license" : "GPL-3.0-or-later",
+  "license": "GPL-3.0-or-later",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint . --fix",
