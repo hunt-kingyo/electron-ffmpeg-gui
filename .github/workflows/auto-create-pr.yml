@@ -5,7 +5,7 @@ on:
       - "main"
 env:
   BASE_BRANCH: main
-  REVIEWER: <レビューアのgithub username>
+  REVIEWER: hunt-kingyo
 
 jobs:
   create_pr:
