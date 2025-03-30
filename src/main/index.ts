@@ -41,8 +41,6 @@ function createWindow(): void {
   //文字列が送られてくるが、どうせ配列でffmpegに渡す必要があるためこうした
   let options: string[] = []
   let outputFilePath = ''
-  let checkPathResult = ''
-  let intProgress:number = 0
 
   ipcMain.handle('open-multiple-dialog', async () => {
     const inputList:string[] = []
@@ -93,44 +91,78 @@ function createWindow(): void {
     } = allOptions
      
     
-    const encode = (inputFilePath: string) => {
-      if (outputFolder == ''){
-        console.log('output folder is not selected.')
-        mainWindow.webContents.send('ffmpeg-log', 'output folder is not selected.')
-        return
-      }
-      outputFilePath =
-        join(outputFolder, basename(inputFilePath, extname(inputFilePath))) + suffix + getExt(format)
-      //将来的にユーザーがオプションを任意に追加する機能を付けるために一度配列をコピーしている
+    // 一つの変換処理をPromiseでラップする関数
+    const encodePromise = (inputFilePath: string): Promise<void> => {
+      return new Promise((resolve, reject) => {
+        if (outputFolder == '') {
+          console.log('output folder is not selected.')
+          mainWindow.webContents.send('ffmpeg-log', 'output folder is not selected.')
+          reject(new Error('Output folder is not selected.'))
+          return
+        }
+        
+        outputFilePath =
+          join(outputFolder, basename(inputFilePath, extname(inputFilePath))) + suffix + getExt(format)
+        
+        //将来的にユーザーがオプションを任意に追加する機能を付けるために一度配列をコピーしている
         options = [...option]
-      if (existsSync(outputFilePath)) {
-        checkPathResult = 
-          `file already exists: ${outputFilePath}\n\
-          select suffix, or other output folder.\n`
-        mainWindow.webContents.send('ffmpeg-log', checkPathResult)
-        console.log('file already exists\n')
-      } else {
-        ffmpeg(inputFilePath)
-          .videoCodec(videoCodec)
-          .outputOption(options)
-          .format(format)
-          .on('progress', function (progress) {
-            intProgress = parseInt(progress.percent)
-            console.log('Processing: ' + intProgress + '% done')
-            mainWindow.webContents.send('ffmpeg-log', 'Processing: ' + intProgress + '% done')
-          })
-          .on('error', function (err) {
-            console.log('An error occurred: ' + err.message)
-            mainWindow.webContents.send('ffmpeg-log', 'An error occurred: ' + err.message)
-          })
-          .on('end', function () {
-            console.log('Processing finished !')
-            mainWindow.webContents.send('ffmpeg-log', 'Processing finished !')
-          })
-          .save(outputFilePath)
-      }
+        
+        if (existsSync(outputFilePath)) {
+          const checkPathResult = 
+            `file already exists: ${outputFilePath}\n\
+            select suffix, or other output folder.\n`
+          mainWindow.webContents.send('ffmpeg-log', checkPathResult)
+          console.log('file already exists\n')
+          reject(new Error('File already exists.'))
+        } else {
+          ffmpeg(inputFilePath)
+            .videoCodec(videoCodec)
+            .outputOption(options)
+            .format(format)
+            .on('progress', function (progress) {
+              const intProgress = parseInt(progress.percent)
+              console.log('Processing: ' + intProgress + '% done')
+              mainWindow.webContents.send('ffmpeg-log', 'Processing: ' + intProgress + '% done')
+            })
+            .on('error', function (err: { message: string }) {
+              console.log('An error occurred: ' + err.message)
+              mainWindow.webContents.send('ffmpeg-log', 'An error occurred: ' + err.message)
+              reject(err) // エラー時にPromiseをreject
+            })
+            .on('end', function () {
+              console.log('Processing finished !')
+              mainWindow.webContents.send('ffmpeg-log', 'Processing finished !')
+              resolve() // 処理完了時にPromiseをresolve
+            })
+            .save(outputFilePath)
+        }
+      })
     }
-    inputFileList.forEach(inputFileList => encode(inputFileList));
+
+    // ファイルリストを順番に処理する非同期関数
+    const processSequentially = async (fileList: string[]) => {
+      for (const inputFile of fileList) {
+        try {
+          console.log(`Start processing file: ${inputFile}`)
+          mainWindow.webContents.send('ffmpeg-log', `Start processing file: ${inputFile}`)
+          
+          // ファイルの処理が完了するまで待機
+          await encodePromise(inputFile)
+          
+          console.log(`Completed processing: ${inputFile}`)
+          mainWindow.webContents.send('ffmpeg-log', `Completed processing: ${inputFile}`)
+        } catch (error) {
+          console.error(`Error processing ${inputFile}:`, error)
+          mainWindow.webContents.send('ffmpeg-log', `Error processing ${inputFile}: ${(error as Error).message}`)
+          // エラーが発生したら次のファイルへ
+        }
+      }
+      console.log('All files processed!')
+      mainWindow.webContents.send('ffmpeg-log', 'All files processed!')
+    }
+
+    // 実行
+    processSequentially(inputFileList);
   })
 
   mainWindow.on('ready-to-show', () => {
