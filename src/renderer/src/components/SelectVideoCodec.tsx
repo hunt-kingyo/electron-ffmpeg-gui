@@ -29,6 +29,7 @@ const SelectVideoCodec: React.FC<SelectVideoCodecProps> = ({ onVideoCodecChange,
                     <MenuItem value="libvpx">libvpx VP8</MenuItem>
                     <MenuItem value="libsvtav1">SVT-AV1: N/A</MenuItem>
                     <MenuItem value="h264_nvenc">NVENC H.264</MenuItem>
+                    <MenuItem value="hevc_nvenc">NVENC H.265</MenuItem>
                     <MenuItem value="dnxhd">DNxHR</MenuItem>
                     <MenuItem value="prores_ks">Apple ProRes(iCodec Pro)</MenuItem>
                 </Select>

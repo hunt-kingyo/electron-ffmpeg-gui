@@ -27,7 +27,13 @@ const codecOptionList = {
         { label: "-crf 30", option: ["-crf 30"] },
     ],
     h264_nvenc: [
-        { label: "CQP 21", option: ["-cq 21", "-bf 3"] },
+        { label: "CQP 21", option: ["-b:v 0", "-cq 21", "-bf 3"] },
+        { label: "CQP 23", option: ["-b:v 0", "-cq 23"] },
+        { label: "CQP 28", option: ["-b:v 0", "-cq 28"] },
+    ],
+    hevc_nvenc: [
+        { label: "CQP 23", option: ["-b:v 0", "-cq 23"] },
+        { label: "CQP 28", option: ["-b:v 0", "-cq 28"] },
     ],
     dnxhd: [
         {label: "DNxHR 444 with alpha", option: ["-profile 5", "-pix_fmt yuva444p10le"] }, 
