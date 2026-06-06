@@ -1,19 +1,15 @@
-interface FormatExtMap {
-    key:string
-}
+const formatExtMap = {
+  mp4: '.mp4',
+  mov: '.mov',
+  mxf: '.mxf',
+  mxf_opatom: '.mxf',
+  webm: '.webm'
+} as const
 
-const  FormatExtMap = {
-    "mp4" : ".mp4",
-    "mov" : ".mov",
-    "mxf" : ".mxf",
-    "mxf_opatom" : ".mxf",
-    "webm" : ".webm"
-}
+type FormatName = keyof typeof formatExtMap
 
-type ExtensionMap = typeof FormatExtMap
-
-const getExt = (format: string): ExtensionMap[] => {
-    return FormatExtMap[format];
+const getExt = (format: string): string => {
+  return formatExtMap[format as FormatName] ?? ''
 }
 
 export default getExt

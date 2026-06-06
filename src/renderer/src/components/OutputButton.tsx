@@ -7,7 +7,10 @@ interface OutputButtonProps {
 
 const OutputButton: React.FC<OutputButtonProps> = ({ onOutputFolderChange }) => {
   const handleFilePath = async () => {
-    onOutputFolderChange(await window.myAPI.openOutputDialog())
+    const outputFolder = await window.myAPI.openOutputDialog()
+    if (outputFolder) {
+      onOutputFolderChange(outputFolder)
+    }
   }
   return (
     <>
