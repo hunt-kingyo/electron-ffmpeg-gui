@@ -31,7 +31,9 @@ const EncodeButton: React.FC<EncodeButtonProps> = ({ encodeOptions, inputFileLis
       codecOption: [...encodeOptions.codecOption], // 配列のディープコピー
       inputFileList
     };
-    window.myAPI.startFfmpeg(allOptions)
+    window.myAPI.startFfmpeg(allOptions).catch((error) => {
+      console.error('Failed to start ffmpeg:', error)
+    })
   }
   return (
     <>
