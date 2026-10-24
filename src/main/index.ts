@@ -5,8 +5,12 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import getExt from './getExt'
 import { resolveFfmpegPath } from './ffmpeg/resolveFfmpegPath'
-import { runFfmpeg } from './ffmpeg/runFfmpeg'
+import { FfmpegCancelledError, runFfmpeg } from './ffmpeg/runFfmpeg'
+import { FfmpegJobManager } from './ffmpeg/FfmpegJobManager'
 import type { AllOptions, RunFfmpegResult } from './ffmpeg/types'
+
+const ffmpegJobs = new FfmpegJobManager()
+let quitting = false
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -23,9 +27,16 @@ function createWindow(): void {
     }
   })
 
+  let closing = false
+  const send = (channel: string, payload: unknown): void => {
+    if (!mainWindow.isDestroyed() && !mainWindow.webContents.isDestroyed()) {
+      mainWindow.webContents.send(channel, payload)
+    }
+  }
+
   const sendFfmpegLog = (message: string) => {
     console.log(message)
-    mainWindow.webContents.send('ffmpeg-log', message)
+    send('ffmpeg-log', message)
   }
 
   ipcMain.handle('open-multiple-dialog', async () => {
@@ -61,86 +72,133 @@ function createWindow(): void {
   })
 
   ipcMain.handle('start-ffmpeg', async (_e, allOptions: AllOptions): Promise<RunFfmpegResult[]> => {
-    const {
-      inputFileList,
-      videoCodec,
-      codecOption,
-      containerFormat,
-      suffix,
-      outputFolder
-    } = allOptions
-    const results: RunFfmpegResult[] = []
+    if (closing || quitting) throw new Error('The application is closing.')
 
-    if (outputFolder === '') {
-      sendFfmpegLog('output folder is not selected.')
-      return inputFileList.map((inputFilePath) => ({
-        inputFilePath,
-        outputFilePath: '',
-        success: false,
-        errorMessage: 'Output folder is not selected.'
-      }))
-    }
+    return ffmpegJobs.run(async (signal) => {
+      const { inputFileList, videoCodec, codecOption, containerFormat, suffix, outputFolder } =
+        allOptions
+      const results: RunFfmpegResult[] = []
 
-    const ffmpegPath = resolveFfmpegPath()
-
-    for (const inputFilePath of inputFileList) {
-      const outputFilePath =
-        join(outputFolder, basename(inputFilePath, extname(inputFilePath))) +
-        suffix +
-        getExt(containerFormat)
-
-      try {
-        sendFfmpegLog(`Start processing file: ${inputFilePath}`)
-        mainWindow.webContents.send('ffmpeg-status', {
-          type: 'start',
-          message: `Start processing file: ${inputFilePath}`,
+      if (outputFolder === '') {
+        sendFfmpegLog('output folder is not selected.')
+        return inputFileList.map((inputFilePath) => ({
           inputFilePath,
-          outputFilePath
-        })
+          outputFilePath: '',
+          success: false,
+          errorMessage: 'Output folder is not selected.'
+        }))
+      }
 
-        if (existsSync(outputFilePath)) {
-          throw new Error(`file already exists: ${outputFilePath}\nselect suffix, or other output folder.`)
+      const ffmpegPath = resolveFfmpegPath()
+
+      for (const inputFilePath of inputFileList) {
+        const outputFilePath =
+          join(outputFolder, basename(inputFilePath, extname(inputFilePath))) +
+          suffix +
+          getExt(containerFormat)
+
+        if (signal.aborted) {
+          results.push({
+            inputFilePath,
+            outputFilePath,
+            success: false,
+            cancelled: true,
+            errorMessage: 'Encoding was stopped before this file was processed.'
+          })
+          continue
         }
 
-        await runFfmpeg({
-          ffmpegPath,
-          inputFilePath,
-          outputFilePath,
-          videoCodec,
-          codecOptions: codecOption,
-          containerFormat,
-          onLog: sendFfmpegLog,
-          onProgress: (progress) => mainWindow.webContents.send('ffmpeg-progress', progress)
-        })
+        try {
+          sendFfmpegLog(`Start processing file: ${inputFilePath}`)
+          send('ffmpeg-status', {
+            type: 'start',
+            message: `Start processing file: ${inputFilePath}`,
+            inputFilePath,
+            outputFilePath
+          })
 
-        sendFfmpegLog(`Completed processing: ${inputFilePath}`)
-        mainWindow.webContents.send('ffmpeg-status', {
-          type: 'finish',
-          message: `Completed processing: ${inputFilePath}`,
-          inputFilePath,
-          outputFilePath
-        })
-        results.push({ inputFilePath, outputFilePath, success: true })
-      } catch (error) {
-        const errorMessage = (error as Error).message
-        console.error(`Error processing ${inputFilePath}:`, error)
-        sendFfmpegLog(`Error processing ${inputFilePath}: ${errorMessage}`)
-        mainWindow.webContents.send('ffmpeg-status', {
-          type: 'error',
-          message: errorMessage,
-          inputFilePath,
-          outputFilePath
-        })
-        results.push({ inputFilePath, outputFilePath, success: false, errorMessage })
+          if (existsSync(outputFilePath)) {
+            throw new Error(
+              `file already exists: ${outputFilePath}\nselect suffix, or other output folder.`
+            )
+          }
+
+          await runFfmpeg({
+            ffmpegPath,
+            inputFilePath,
+            outputFilePath,
+            videoCodec,
+            codecOptions: codecOption,
+            containerFormat,
+            onLog: sendFfmpegLog,
+            onProgress: (progress) => send('ffmpeg-progress', progress),
+            signal
+          })
+
+          sendFfmpegLog(`Completed processing: ${inputFilePath}`)
+          send('ffmpeg-status', {
+            type: 'finish',
+            message: `Completed processing: ${inputFilePath}`,
+            inputFilePath,
+            outputFilePath
+          })
+          results.push({ inputFilePath, outputFilePath, success: true })
+        } catch (error) {
+          const errorMessage = (error as Error).message
+          if (error instanceof FfmpegCancelledError) {
+            sendFfmpegLog(errorMessage)
+            results.push({
+              inputFilePath,
+              outputFilePath,
+              success: false,
+              cancelled: true,
+              errorMessage
+            })
+            continue
+          }
+          console.error(`Error processing ${inputFilePath}:`, error)
+          sendFfmpegLog(`Error processing ${inputFilePath}: ${errorMessage}`)
+          send('ffmpeg-status', {
+            type: 'error',
+            message: errorMessage,
+            inputFilePath,
+            outputFilePath
+          })
+          results.push({ inputFilePath, outputFilePath, success: false, errorMessage })
+        }
       }
-    }
 
-    sendFfmpegLog('All files processed!')
-    mainWindow.webContents.send('ffmpeg-status', {
-      type: 'all-finished',
-      message: 'All files processed!'
+      const message = signal.aborted ? 'Encoding stopped.' : 'All files processed!'
+      sendFfmpegLog(message)
+      send('ffmpeg-status', {
+        type: signal.aborted ? 'cancelled' : 'all-finished',
+        message
+      })
+      return results
     })
-    return results
+  })
+
+  ipcMain.handle('stop-ffmpeg', () => ffmpegJobs.stop())
+
+  mainWindow.on('close', (event) => {
+    closing = true
+    if (!ffmpegJobs.isRunning) return
+
+    event.preventDefault()
+    void ffmpegJobs.stop().then(() => {
+      if (!mainWindow.isDestroyed()) mainWindow.close()
+    })
+  })
+
+  mainWindow.on('closed', () => {
+    for (const channel of [
+      'open-multiple-dialog',
+      'open-output-dialog',
+      'start-ffmpeg',
+      'stop-ffmpeg'
+    ]) {
+      ipcMain.removeHandler(channel)
+    }
   })
 
   mainWindow.on('ready-to-show', () => {
@@ -179,4 +237,12 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
+})
+
+app.on('before-quit', (event) => {
+  quitting = true
+  if (!ffmpegJobs.isRunning) return
+
+  event.preventDefault()
+  void ffmpegJobs.stop().then(() => app.quit())
 })

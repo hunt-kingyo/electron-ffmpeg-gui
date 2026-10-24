@@ -2,38 +2,39 @@ import { ipcRenderer, contextBridge } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
 interface AllOptions {
-  inputFileList:string[];
-  videoCodec:string;
-  codecOption:string[];
-  containerFormat:string;
-  suffix: string;
-  outputFolder:string;
+  inputFileList: string[]
+  videoCodec: string
+  codecOption: string[]
+  containerFormat: string
+  suffix: string
+  outputFolder: string
 }
 
 interface RunFfmpegResult {
-  inputFilePath: string;
-  outputFilePath: string;
-  success: boolean;
-  errorMessage?: string;
+  inputFilePath: string
+  outputFilePath: string
+  success: boolean
+  errorMessage?: string
+  cancelled?: boolean
 }
 
 interface FfmpegProgress {
-  inputFilePath: string;
-  outputFilePath: string;
-  percent: number;
-  elapsedSeconds: number;
-  durationSeconds: number;
+  inputFilePath: string
+  outputFilePath: string
+  percent: number
+  elapsedSeconds: number
+  durationSeconds: number
 }
 
 interface FfmpegStatus {
-  type: 'start' | 'finish' | 'error' | 'all-finished';
-  message: string;
-  inputFilePath?: string;
-  outputFilePath?: string;
+  type: 'start' | 'finish' | 'error' | 'all-finished' | 'cancelled'
+  message: string
+  inputFilePath?: string
+  outputFilePath?: string
 }
 
 // Custom APIs for renderer
-const myAPI =  {
+const myAPI = {
   openMultipleDialog: () => ipcRenderer.invoke('open-multiple-dialog'),
   openOutputDialog: () => ipcRenderer.invoke('open-output-dialog'),
   selectCodec: (codec: string) => ipcRenderer.send('select-codec', codec),
@@ -42,15 +43,16 @@ const myAPI =  {
   selectFormat: (format: string) => ipcRenderer.send('select-format', format),
   startFfmpeg: (allOptions: AllOptions): Promise<RunFfmpegResult[]> =>
     ipcRenderer.invoke('start-ffmpeg', allOptions),
+  stopFfmpeg: (): Promise<void> => ipcRenderer.invoke('stop-ffmpeg'),
   ffmpegLog: (callback: (message: string) => void) => {
     const logHandler = (_e, message: string) => {
-      callback(message);
+      callback(message)
     }
 
     ipcRenderer.on('ffmpeg-log', logHandler)
 
     return () => {
-      ipcRenderer.removeListener('ffmpeg-log', logHandler);
+      ipcRenderer.removeListener('ffmpeg-log', logHandler)
     }
   },
   ffmpegProgress: (callback: (progress: FfmpegProgress) => void) => {
@@ -83,7 +85,7 @@ const myAPI =  {
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
-    contextBridge.exposeInMainWorld('myAPI',myAPI)
+    contextBridge.exposeInMainWorld('myAPI', myAPI)
   } catch (error) {
     console.error(error)
   }
