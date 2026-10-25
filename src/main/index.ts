@@ -6,6 +6,12 @@ import { runFfmpegBatch } from './ffmpeg/runFfmpegBatch'
 import { FfmpegJobManager } from './ffmpeg/FfmpegJobManager'
 import type { AllOptions, RunFfmpegResult } from './ffmpeg/types'
 
+// Allow software rendering on systems where Electron cannot initialize OpenGL.
+// Electron requires this call before the app is ready.
+if (process.env['FFMPEG_GUI_DISABLE_GPU'] === '1') {
+  app.disableHardwareAcceleration()
+}
+
 const ffmpegJobs = new FfmpegJobManager()
 let quitting = false
 
