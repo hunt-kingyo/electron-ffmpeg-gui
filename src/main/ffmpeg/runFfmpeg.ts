@@ -3,6 +3,13 @@ import { buildFfmpegArgs } from './buildFfmpegArgs'
 import { FfmpegProgressParser } from './parseFfmpegProgress'
 import type { RunFfmpegOptions } from './types'
 
+export class FfmpegCancelledError extends Error {
+  constructor() {
+    super('Encoding was stopped. Any partially encoded output file has been retained.')
+    this.name = 'FfmpegCancelledError'
+  }
+}
+
 export const runFfmpeg = ({
   ffmpegPath,
   inputFilePath,
@@ -11,9 +18,15 @@ export const runFfmpeg = ({
   codecOptions,
   containerFormat,
   onLog,
-  onProgress
+  onProgress,
+  signal
 }: RunFfmpegOptions): Promise<void> => {
   return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new FfmpegCancelledError())
+      return
+    }
+
     const args = buildFfmpegArgs({
       inputFilePath,
       outputFilePath,
@@ -26,10 +39,26 @@ export const runFfmpeg = ({
     let stderr = ''
 
     const ffmpegProcess = spawn(ffmpegPath, args, { shell: false })
+    let stopTimer: ReturnType<typeof setTimeout> | undefined
+    let processError: Error | undefined
+
+    const stop = (): void => {
+      if (stopTimer || ffmpegProcess.exitCode !== null || ffmpegProcess.signalCode !== null) return
+
+      // Request a clean exit so FFmpeg can finalize the container on every platform.
+      ffmpegProcess.stdin.end('q\n')
+      stopTimer = setTimeout(() => ffmpegProcess.kill('SIGKILL'), 3000)
+    }
+
+    // A process can exit between a stop request and the stdin write.
+    ffmpegProcess.stdin.on('error', () => undefined)
+    signal?.addEventListener('abort', stop, { once: true })
+    if (signal?.aborted) stop()
 
     ffmpegProcess.stderr.setEncoding('utf8')
     ffmpegProcess.stderr.on('data', (chunk: string) => {
       stderr += chunk
+      if (signal?.aborted) return
       const progress = progressParser.parse(chunk)
 
       if (progress && progress.percent !== lastProgress) {
@@ -44,10 +73,21 @@ export const runFfmpeg = ({
     })
 
     ffmpegProcess.on('error', (error) => {
-      reject(error)
+      processError = error
     })
 
     ffmpegProcess.on('close', (code) => {
+      if (stopTimer) clearTimeout(stopTimer)
+      signal?.removeEventListener('abort', stop)
+
+      if (signal?.aborted) {
+        reject(new FfmpegCancelledError())
+        return
+      }
+      if (processError) {
+        reject(processError)
+        return
+      }
       if (code === 0) {
         onLog('Processing finished !')
         resolve()

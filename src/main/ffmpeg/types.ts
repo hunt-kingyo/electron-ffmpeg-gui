@@ -16,7 +16,7 @@ export interface FfmpegProgress {
 }
 
 export interface FfmpegStatus {
-  type: 'start' | 'finish' | 'error' | 'all-finished'
+  type: 'start' | 'finish' | 'error' | 'all-finished' | 'cancelled'
   message: string
   inputFilePath?: string
   outputFilePath?: string
@@ -31,6 +31,7 @@ export interface RunFfmpegOptions {
   containerFormat: string
   onLog: (message: string) => void
   onProgress?: (progress: FfmpegProgress) => void
+  signal?: AbortSignal
 }
 
 export interface RunFfmpegResult {
@@ -38,4 +39,5 @@ export interface RunFfmpegResult {
   outputFilePath: string
   success: boolean
   errorMessage?: string
+  cancelled?: boolean
 }
