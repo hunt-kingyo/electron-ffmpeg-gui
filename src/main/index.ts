@@ -1,11 +1,8 @@
 import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
-import { join, basename, extname } from 'path'
-import { existsSync } from 'fs'
+import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import getExt from './getExt'
-import { resolveFfmpegPath } from './ffmpeg/resolveFfmpegPath'
-import { FfmpegCancelledError, runFfmpeg } from './ffmpeg/runFfmpeg'
+import { runFfmpegBatch } from './ffmpeg/runFfmpegBatch'
 import { FfmpegJobManager } from './ffmpeg/FfmpegJobManager'
 import type { AllOptions, RunFfmpegResult } from './ffmpeg/types'
 
@@ -74,108 +71,14 @@ function createWindow(): void {
   ipcMain.handle('start-ffmpeg', async (_e, allOptions: AllOptions): Promise<RunFfmpegResult[]> => {
     if (closing || quitting) throw new Error('The application is closing.')
 
-    return ffmpegJobs.run(async (signal) => {
-      const { inputFileList, videoCodec, codecOption, containerFormat, suffix, outputFolder } =
-        allOptions
-      const results: RunFfmpegResult[] = []
-
-      if (outputFolder === '') {
-        sendFfmpegLog('output folder is not selected.')
-        return inputFileList.map((inputFilePath) => ({
-          inputFilePath,
-          outputFilePath: '',
-          success: false,
-          errorMessage: 'Output folder is not selected.'
-        }))
-      }
-
-      const ffmpegPath = resolveFfmpegPath()
-
-      for (const inputFilePath of inputFileList) {
-        const outputFilePath =
-          join(outputFolder, basename(inputFilePath, extname(inputFilePath))) +
-          suffix +
-          getExt(containerFormat)
-
-        if (signal.aborted) {
-          results.push({
-            inputFilePath,
-            outputFilePath,
-            success: false,
-            cancelled: true,
-            errorMessage: 'Encoding was stopped before this file was processed.'
-          })
-          continue
-        }
-
-        try {
-          sendFfmpegLog(`Start processing file: ${inputFilePath}`)
-          send('ffmpeg-status', {
-            type: 'start',
-            message: `Start processing file: ${inputFilePath}`,
-            inputFilePath,
-            outputFilePath
-          })
-
-          if (existsSync(outputFilePath)) {
-            throw new Error(
-              `file already exists: ${outputFilePath}\nselect suffix, or other output folder.`
-            )
-          }
-
-          await runFfmpeg({
-            ffmpegPath,
-            inputFilePath,
-            outputFilePath,
-            videoCodec,
-            codecOptions: codecOption,
-            containerFormat,
-            onLog: sendFfmpegLog,
-            onProgress: (progress) => send('ffmpeg-progress', progress),
-            signal
-          })
-
-          sendFfmpegLog(`Completed processing: ${inputFilePath}`)
-          send('ffmpeg-status', {
-            type: 'finish',
-            message: `Completed processing: ${inputFilePath}`,
-            inputFilePath,
-            outputFilePath
-          })
-          results.push({ inputFilePath, outputFilePath, success: true })
-        } catch (error) {
-          const errorMessage = (error as Error).message
-          if (error instanceof FfmpegCancelledError) {
-            sendFfmpegLog(errorMessage)
-            results.push({
-              inputFilePath,
-              outputFilePath,
-              success: false,
-              cancelled: true,
-              errorMessage
-            })
-            continue
-          }
-          console.error(`Error processing ${inputFilePath}:`, error)
-          sendFfmpegLog(`Error processing ${inputFilePath}: ${errorMessage}`)
-          send('ffmpeg-status', {
-            type: 'error',
-            message: errorMessage,
-            inputFilePath,
-            outputFilePath
-          })
-          results.push({ inputFilePath, outputFilePath, success: false, errorMessage })
-        }
-      }
-
-      const message = signal.aborted ? 'Encoding stopped.' : 'All files processed!'
-      sendFfmpegLog(message)
-      send('ffmpeg-status', {
-        type: signal.aborted ? 'cancelled' : 'all-finished',
-        message
+    return ffmpegJobs.run((signal) =>
+      runFfmpegBatch(allOptions, {
+        signal,
+        onLog: sendFfmpegLog,
+        onProgress: (progress) => send('ffmpeg-progress', progress),
+        onStatus: (status) => send('ffmpeg-status', status)
       })
-      return results
-    })
+    )
   })
 
   ipcMain.handle('stop-ffmpeg', () => ffmpegJobs.stop())
