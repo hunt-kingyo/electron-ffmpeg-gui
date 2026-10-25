@@ -66,6 +66,90 @@ function runner(child) {
   return sourceLoader({ child_process: { spawn: () => child } })('src/main/ffmpeg/runFfmpeg.ts')
 }
 
+test('progress survives every chunk boundary in duration and elapsed timestamps', () => {
+  const { FfmpegProgressParser } = sourceLoader()('src/main/ffmpeg/parseFfmpegProgress.ts')
+  const output = '  Duration: 00:01:00.50, start: 0.000000\nframe=10 time=00:00:30.25 speed=1x\r'
+  const expected = { percent: 50, elapsedSeconds: 30.25, durationSeconds: 60.5 }
+  for (let boundary = 1; boundary < output.length; boundary++) {
+    const parser = new FfmpegProgressParser()
+    const first = parser.parse(output.slice(0, boundary))
+    const second = parser.parse(output.slice(boundary))
+    assert.deepEqual(second ?? first, expected, `chunk boundary ${boundary}`)
+  }
+  const parser = new FfmpegProgressParser()
+  let progress
+  for (const character of output) progress = parser.parse(character) ?? progress
+  assert.deepEqual(progress, expected)
+})
+
+test('progress waits for complete records and uses the latest carriage-return update', () => {
+  const { FfmpegProgressParser } = sourceLoader()('src/main/ffmpeg/parseFfmpegProgress.ts')
+  const parser = new FfmpegProgressParser()
+  assert.equal(parser.parse('Duration: 00:01:00.'), null)
+  assert.equal(parser.parse('50\r\nframe=1 time=00:00:30.'), null)
+  assert.deepEqual(parser.parse('25\rframe=2 time=00:00:45.375\r'), {
+    percent: 75,
+    elapsedSeconds: 45.375,
+    durationSeconds: 60.5
+  })
+})
+
+test('progress recovers after a long diagnostic line and stays within percentage bounds', () => {
+  const { FfmpegProgressParser } = sourceLoader()('src/main/ffmpeg/parseFfmpegProgress.ts')
+  const parser = new FfmpegProgressParser()
+  assert.equal(parser.parse('x'.repeat(100000)), null)
+  assert.equal(parser.parse('\nDuration: 00:00:10.00\n'), null)
+  assert.deepEqual(parser.parse('time=00:00:11.00\r'), {
+    percent: 100,
+    elapsedSeconds: 11,
+    durationSeconds: 10
+  })
+})
+
+test('file progress events survive fragmented output and suppress unchanged percentages', async () => {
+  const child = childProcess()
+  const progress = []
+  const done = runner(child).runFfmpeg({ ...options, onProgress: (event) => progress.push(event) })
+  child.stderr.write('Duration: 00:01:')
+  child.stderr.write('00.00\ntime=00:00:')
+  child.stderr.write('30.00\r')
+  child.stderr.write('time=00:00:30.10\r')
+  child.stderr.write('time=00:00:45.00\r')
+  child.emit('close', 0)
+  await done
+  assert.deepEqual(progress, [
+    {
+      inputFilePath: options.inputFilePath,
+      outputFilePath: options.outputFilePath,
+      percent: 50,
+      elapsedSeconds: 30,
+      durationSeconds: 60
+    },
+    {
+      inputFilePath: options.inputFilePath,
+      outputFilePath: options.outputFilePath,
+      percent: 75,
+      elapsedSeconds: 45,
+      durationSeconds: 60
+    }
+  ])
+})
+
+test('large stderr retains the final diagnostic across chunks without an unbounded error', async () => {
+  const child = childProcess()
+  const done = runner(child).runFfmpeg(options)
+  const rejected = assert.rejects(done, (error) => {
+    assert.ok(error.message.length <= 64 * 1024)
+    assert.ok(error.message.endsWith('final diagnostic'))
+    return true
+  })
+  for (let index = 0; index < 20; index++) child.stderr.write('x'.repeat(10000))
+  child.stderr.write('final diag')
+  child.stderr.write('nostic\n')
+  child.emit('close', 1)
+  await rejected
+})
+
 test('stop sends q, waits for close, and treats exit code 0 as cancelled', async () => {
   const child = childProcess()
   const { runFfmpeg, FfmpegCancelledError } = runner(child)

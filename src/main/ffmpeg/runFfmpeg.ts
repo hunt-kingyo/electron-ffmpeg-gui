@@ -3,6 +3,8 @@ import { buildFfmpegArgs } from './buildFfmpegArgs'
 import { FfmpegProgressParser } from './parseFfmpegProgress'
 import type { RunFfmpegOptions } from './types'
 
+const MAX_STDERR_CHARS = 64 * 1024
+
 export class FfmpegCancelledError extends Error {
   constructor() {
     super('Encoding was stopped. Any partially encoded output file has been retained.')
@@ -57,7 +59,8 @@ export const runFfmpeg = ({
 
     ffmpegProcess.stderr.setEncoding('utf8')
     ffmpegProcess.stderr.on('data', (chunk: string) => {
-      stderr += chunk
+      // Only the recent diagnostics are needed if encoding fails.
+      stderr = (stderr + chunk.slice(-MAX_STDERR_CHARS)).slice(-MAX_STDERR_CHARS)
       if (signal?.aborted) return
       const progress = progressParser.parse(chunk)
 
