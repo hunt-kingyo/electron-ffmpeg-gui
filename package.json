@@ -40,16 +40,16 @@
   },
   "devDependencies": {
     "@electron-toolkit/tsconfig": "^2.0.0",
-    "@eslint/js": "^9.39.5",
+    "@eslint-react/eslint-plugin": "^5.28.8",
+    "@eslint/js": "^10.0.1",
     "@types/node": "^24.19.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "electron": "^45.0.0",
-    "electron-builder": "^26.15.3",
+    "electron-builder": "^26.18.0",
     "electron-vite": "^6.0.0",
-    "eslint": "^9.39.5",
-    "eslint-plugin-react": "^7.37.5",
+    "eslint": "^10.13.0",
     "globals": "^17.13.0",
     "prettier": "^3.9.10",
     "typescript": "~6.0.3",
@@ -57,10 +57,15 @@
     "vite": "^8.3.5"
   },
   "engines": {
-    "node": "^22.12.0 || >=24.0.0"
+    "node": "^22.13.0 || >=24.0.0"
   },
   "allowScripts": {
     "ffmpeg-static@5.3.0": true,
     "electron-winstaller@5.4.0": true
+  },
+  "overrides": {
+    "@electron/get@3.1.0": {
+      "global-agent": "^4.1.6"
+    }
   }
 }
