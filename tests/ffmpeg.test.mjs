@@ -121,8 +121,7 @@ test('Encode disables invalid selections and guards invocation; empty optional f
     '@mui/material/Button': 'Button',
     '@mui/material/Stack': 'Stack',
     '@mui/material/Grid': 'Grid',
-    '@mui/material/Box': 'Box',
-    '@mui/material/Typography': 'Typography'
+    '@mui/material/Box': 'Box'
   })('src/renderer/src/components/EncodeButton.tsx')
   const previousWindow = globalThis.window
   globalThis.window = { myAPI: { startFfmpeg: async (options) => calls.push(options) } }
@@ -130,11 +129,10 @@ test('Encode disables invalid selections and guards invocation; empty optional f
     for (const selection of [...invalidSelections, {}]) {
       const { inputFileList, ...encodeOptions } = { ...batchOptions, ...selection }
       const tree = EncodeButton({ inputFileList, encodeOptions })
-      const [message, buttons] = tree.props.children
+      const buttons = tree.props.children
       const encode = buttons.props.children[0].props.children
       const invalid = Object.keys(selection).length > 0
       assert.equal(encode.props.disabled, invalid)
-      assert.equal(Boolean(message), invalid)
       await encode.props.onClick()
       assert.equal(calls.length, invalid ? 0 : 1)
     }

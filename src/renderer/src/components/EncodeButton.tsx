@@ -1,7 +1,6 @@
 import Button from '@mui/material/Button'
 import React from 'react'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
 
@@ -31,19 +30,15 @@ const EncodeButton: React.FC<EncodeButtonProps> = ({ encodeOptions, inputFileLis
   const [isEncoding, setIsEncoding] = React.useState(false)
   const [isStopping, setIsStopping] = React.useState(false)
   const encodingRef = React.useRef(false)
-  const validationError =
-    inputFileList.length === 0 || inputFileList.some((path) => !path.trim())
-      ? 'Select at least one input video.'
-      : !encodeOptions.videoCodec.trim()
-        ? 'Select a video codec.'
-        : !encodeOptions.containerFormat.trim()
-          ? 'Select a container format.'
-          : !encodeOptions.outputFolder.trim()
-            ? 'Select an output folder.'
-            : undefined
+  const isInvalid =
+    inputFileList.length === 0 ||
+    inputFileList.some((path) => !path.trim()) ||
+    !encodeOptions.videoCodec.trim() ||
+    !encodeOptions.containerFormat.trim() ||
+    !encodeOptions.outputFolder.trim()
 
   const handleEncode = async () => {
-    if (encodingRef.current || validationError) return
+    if (encodingRef.current || isInvalid) return
     encodingRef.current = true
     setIsEncoding(true)
     const allOptions: AllOptions = {
@@ -73,18 +68,13 @@ const EncodeButton: React.FC<EncodeButtonProps> = ({ encodeOptions, inputFileLis
   }
   return (
     <Stack spacing={1}>
-      {validationError && (
-        <Typography variant="body2" color="text.secondary">
-          {validationError}
-        </Typography>
-      )}
       <Grid container spacing={2}>
         <Grid size="auto">
           <Button
             variant="contained"
             color="primary"
             onClick={handleEncode}
-            disabled={isEncoding || isStopping || !!validationError}
+            disabled={isEncoding || isStopping || isInvalid}
           >
             Encode
           </Button>
