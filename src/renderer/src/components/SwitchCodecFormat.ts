@@ -1,17 +1,8 @@
 import codecFormatList from '../datas/CodecFormatList'
 
-type CodecLists = {
-    codec: string;
-};
-
-const SwitchCodecFormat = (selectedCodec) => {
-    const codecName: keyof CodecLists = selectedCodec
-    if (selectedCodec != '') {
-        return codecFormatList[codecName]
-    }else{
-        return [{label: 'Select codec first', option: ''}]
-    }
-
+const SwitchCodecFormat = (selectedCodec: string): { label: string; id: string }[] => {
+  if (!Object.hasOwn(codecFormatList, selectedCodec)) return []
+  return codecFormatList[selectedCodec as keyof typeof codecFormatList]
 }
 
 export default SwitchCodecFormat

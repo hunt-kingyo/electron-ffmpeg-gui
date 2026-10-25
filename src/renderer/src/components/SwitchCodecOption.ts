@@ -1,17 +1,8 @@
 import codecOptionList from '../datas/CodecOptionList'
 
-type CodecLists = {
-    codec: string[];
-};
-
-const switchCodecOption = (selectedCodec) => {
-    const codecName: keyof CodecLists = selectedCodec
-    if (selectedCodec != '') {
-        return codecOptionList[codecName]
-    }else{
-        return [{label: 'Select codec first', id: ''}]
-    }
-
+const switchCodecOption = (selectedCodec: string): { label: string; option: string[] }[] => {
+  if (!Object.hasOwn(codecOptionList, selectedCodec)) return []
+  return codecOptionList[selectedCodec as keyof typeof codecOptionList]
 }
 
 export default switchCodecOption
