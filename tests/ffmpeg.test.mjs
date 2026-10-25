@@ -116,6 +116,7 @@ test('invalid batch selections report an error before resolving or spawning FFmp
 
 test('Encode disables invalid selections and guards invocation; empty optional fields are valid', async () => {
   const calls = []
+  let progressResets = 0
   const { default: EncodeButton } = sourceLoader({
     react: { useState: () => [false, () => {}], useRef: () => ({ current: false }) },
     '@mui/material/Button': 'Button',
@@ -128,13 +129,21 @@ test('Encode disables invalid selections and guards invocation; empty optional f
   try {
     for (const selection of [...invalidSelections, {}]) {
       const { inputFileList, ...encodeOptions } = { ...batchOptions, ...selection }
-      const tree = EncodeButton({ inputFileList, encodeOptions })
+      const tree = EncodeButton({
+        inputFileList,
+        encodeOptions,
+        onEncodeStart: () => {
+          assert.equal(calls.length, 0)
+          progressResets++
+        }
+      })
       const buttons = tree.props.children
       const encode = buttons.props.children[0].props.children
       const invalid = Object.keys(selection).length > 0
       assert.equal(encode.props.disabled, invalid)
       await encode.props.onClick()
       assert.equal(calls.length, invalid ? 0 : 1)
+      assert.equal(progressResets, invalid ? 0 : 1)
     }
     assert.deepEqual(calls[0], batchOptions)
   } finally {

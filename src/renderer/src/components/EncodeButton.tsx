@@ -24,9 +24,14 @@ interface AllOptions {
 interface EncodeButtonProps {
   encodeOptions: EncodeOptions
   inputFileList: string[]
+  onEncodeStart: () => void
 }
 
-const EncodeButton: React.FC<EncodeButtonProps> = ({ encodeOptions, inputFileList }) => {
+const EncodeButton: React.FC<EncodeButtonProps> = ({
+  encodeOptions,
+  inputFileList,
+  onEncodeStart
+}) => {
   const [isEncoding, setIsEncoding] = React.useState(false)
   const [isStopping, setIsStopping] = React.useState(false)
   const encodingRef = React.useRef(false)
@@ -47,6 +52,7 @@ const EncodeButton: React.FC<EncodeButtonProps> = ({ encodeOptions, inputFileLis
       inputFileList
     }
     try {
+      onEncodeStart()
       await window.myAPI.startFfmpeg(allOptions)
     } catch (error) {
       console.error('Failed to start ffmpeg:', error)

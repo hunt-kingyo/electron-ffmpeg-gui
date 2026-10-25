@@ -14,6 +14,25 @@ import FFmpegLogDisplay from './components/FFmpegLogDisplay'
 
 function App(): JSX.Element {
   const [inputFileList, setInputList] = React.useState<string[]>([])
+  const [fileProgress, setFileProgress] = React.useState<Record<string, number>>({})
+
+  React.useEffect(() => {
+    const unsubscribeProgress = window.myAPI.ffmpegProgress(({ inputFilePath, percent }) => {
+      setFileProgress((previous) => ({ ...previous, [inputFilePath]: percent }))
+    })
+    const unsubscribeStatus = window.myAPI.ffmpegStatus(({ type, inputFilePath }) => {
+      if (inputFilePath && (type === 'start' || type === 'finish')) {
+        setFileProgress((previous) => ({
+          ...previous,
+          [inputFilePath]: type === 'finish' ? 100 : 0
+        }))
+      }
+    })
+    return () => {
+      unsubscribeProgress()
+      unsubscribeStatus()
+    }
+  }, [])
 
   const {
     encodeOptions,
@@ -43,7 +62,11 @@ function App(): JSX.Element {
                   </Button>
                 </Grid>
               </Grid>
-              <InputListDisplay inputFileList={inputFileList} setInputList={setInputList} />
+              <InputListDisplay
+                inputFileList={inputFileList}
+                setInputList={setInputList}
+                fileProgress={fileProgress}
+              />
             </Stack>
           </Grid>
           <Grid size={4}>
@@ -69,7 +92,11 @@ function App(): JSX.Element {
               />
               <OutputButton onOutputFolderChange={setOutputFolder} />
               <OptionDisplay encodeOptions={encodeOptions} />
-              <EncodeButton encodeOptions={encodeOptions} inputFileList={inputFileList} />
+              <EncodeButton
+                encodeOptions={encodeOptions}
+                inputFileList={inputFileList}
+                onEncodeStart={() => setFileProgress({})}
+              />
             </Stack>
           </Grid>
         </Grid>
