@@ -20,13 +20,25 @@ export const runFfmpegBatch = async (
     allOptions
   const results: RunFfmpegResult[] = []
 
-  if (outputFolder === '') {
-    onLog('output folder is not selected.')
+  const validationError =
+    inputFileList.length === 0 || inputFileList.some((path) => !path.trim())
+      ? 'Select at least one input video.'
+      : !videoCodec.trim()
+        ? 'Select a video codec.'
+        : !containerFormat.trim()
+          ? 'Select a container format.'
+          : !outputFolder.trim()
+            ? 'Output folder is not selected.'
+            : undefined
+
+  if (validationError) {
+    onLog(validationError)
+    onStatus({ type: 'error', message: validationError })
     return inputFileList.map((inputFilePath) => ({
       inputFilePath,
       outputFilePath: '',
       success: false,
-      errorMessage: 'Output folder is not selected.'
+      errorMessage: validationError
     }))
   }
 

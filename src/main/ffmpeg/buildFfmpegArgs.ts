@@ -29,7 +29,7 @@ export const buildFfmpegArgs = ({
 }: BuildFfmpegArgsOptions): string[] => {
   return [
     '-hide_banner',
-    '-y',
+    '-n',
     '-i',
     inputFilePath,
     '-c:v',

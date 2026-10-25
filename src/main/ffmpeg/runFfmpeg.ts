@@ -91,7 +91,11 @@ export const runFfmpeg = ({
         reject(processError)
         return
       }
-      if (code === 0) {
+      // Some bundled FFmpeg versions exit with code 0 when -n refuses an existing file.
+      const overwriteRefused =
+        /^File .* already exists\. Exiting\./m.test(stderr) ||
+        /Not overwriting - exiting/.test(stderr)
+      if (code === 0 && !overwriteRefused) {
         onLog('Processing finished !')
         resolve()
         return

@@ -1,6 +1,9 @@
 import Button from '@mui/material/Button'
 import React from 'react'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import Grid from '@mui/material/Grid'
+import Box from '@mui/material/Box'
 
 interface EncodeOptions {
   videoCodec: string
@@ -28,9 +31,19 @@ const EncodeButton: React.FC<EncodeButtonProps> = ({ encodeOptions, inputFileLis
   const [isEncoding, setIsEncoding] = React.useState(false)
   const [isStopping, setIsStopping] = React.useState(false)
   const encodingRef = React.useRef(false)
+  const validationError =
+    inputFileList.length === 0 || inputFileList.some((path) => !path.trim())
+      ? 'Select at least one input video.'
+      : !encodeOptions.videoCodec.trim()
+        ? 'Select a video codec.'
+        : !encodeOptions.containerFormat.trim()
+          ? 'Select a container format.'
+          : !encodeOptions.outputFolder.trim()
+            ? 'Select an output folder.'
+            : undefined
 
   const handleEncode = async () => {
-    if (encodingRef.current) return
+    if (encodingRef.current || validationError) return
     encodingRef.current = true
     setIsEncoding(true)
     const allOptions: AllOptions = {
@@ -59,23 +72,37 @@ const EncodeButton: React.FC<EncodeButtonProps> = ({ encodeOptions, inputFileLis
     }
   }
   return (
-    <Stack direction="row" spacing={1}>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleEncode}
-        disabled={isEncoding || isStopping}
-      >
-        Encode
-      </Button>
-      <Button
-        variant="outlined"
-        color="error"
-        onClick={handleStop}
-        disabled={!isEncoding || isStopping}
-      >
-        {isStopping ? 'Stopping…' : 'Stop'}
-      </Button>
+    <Stack spacing={1}>
+      {validationError && (
+        <Typography variant="body2" color="text.secondary">
+          {validationError}
+        </Typography>
+      )}
+      <Grid container spacing={2}>
+        <Grid size="auto">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleEncode}
+            disabled={isEncoding || isStopping || !!validationError}
+          >
+            Encode
+          </Button>
+        </Grid>
+        <Grid size="grow">
+          <Box />
+        </Grid>
+        <Grid size="auto">
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={handleStop}
+            disabled={!isEncoding || isStopping}
+          >
+            {isStopping ? 'Stopping…' : 'Stop'}
+          </Button>
+        </Grid>
+      </Grid>
     </Stack>
   )
 }

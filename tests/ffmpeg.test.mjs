@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict'
+import { Buffer } from 'node:buffer'
 import { EventEmitter } from 'node:events'
 import { execFileSync, spawn } from 'node:child_process'
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
@@ -12,7 +13,7 @@ import ts from 'typescript'
 
 const require = createRequire(import.meta.url)
 
-// Load the actual main-process sources without launching Electron or writing build files.
+// Load the actual sources without launching Electron or writing build files.
 function sourceLoader(overrides = {}) {
   const cache = new Map()
   function load(file) {
@@ -21,7 +22,11 @@ function sourceLoader(overrides = {}) {
     const module = { exports: {} }
     cache.set(file, module)
     const code = ts.transpileModule(readFileSync(file, 'utf8'), {
-      compilerOptions: { module: ts.ModuleKind.CommonJS, esModuleInterop: true }
+      compilerOptions: {
+        module: ts.ModuleKind.CommonJS,
+        esModuleInterop: true,
+        jsx: ts.JsxEmit.ReactJSX
+      }
     }).outputText
     const localRequire = (name) => {
       if (Object.hasOwn(overrides, name)) return overrides[name]
@@ -65,6 +70,149 @@ const options = {
 function runner(child) {
   return sourceLoader({ child_process: { spawn: () => child } })('src/main/ffmpeg/runFfmpeg.ts')
 }
+
+const batchOptions = {
+  inputFileList: ['/input.mp4'],
+  videoCodec: 'libx264',
+  codecOption: [],
+  containerFormat: 'mp4',
+  suffix: '',
+  outputFolder: '/output'
+}
+
+const invalidSelections = [
+  { inputFileList: [] },
+  { inputFileList: ['/input.mp4', '   '] },
+  { videoCodec: '' },
+  { videoCodec: '   ' },
+  { containerFormat: '' },
+  { containerFormat: '   ' },
+  { outputFolder: '' },
+  { outputFolder: '   ' }
+]
+
+test('invalid batch selections report an error before resolving or spawning FFmpeg', async () => {
+  const { runFfmpegBatch } = sourceLoader({
+    './resolveFfmpegPath': {
+      resolveFfmpegPath: () => assert.fail('FFmpeg must not be resolved for invalid selections')
+    }
+  })('src/main/ffmpeg/runFfmpegBatch.ts')
+  for (const selection of invalidSelections) {
+    const selected = { ...batchOptions, ...selection }
+    const logs = []
+    const statuses = []
+    const results = await runFfmpegBatch(selected, {
+      signal: new AbortController().signal,
+      onLog: (message) => logs.push(message),
+      onStatus: (status) => statuses.push(status),
+      onProgress: () => assert.fail('Invalid selections must not produce progress')
+    })
+    assert.equal(results.length, selected.inputFileList.length)
+    assert.ok(results.every((result) => !result.success && result.errorMessage === logs[0]))
+    assert.deepEqual(statuses, [{ type: 'error', message: logs[0] }])
+    assert.ok(logs[0])
+  }
+})
+
+test('Encode disables invalid selections and guards invocation; empty optional fields are valid', async () => {
+  const calls = []
+  const { default: EncodeButton } = sourceLoader({
+    react: { useState: () => [false, () => {}], useRef: () => ({ current: false }) },
+    '@mui/material/Button': 'Button',
+    '@mui/material/Stack': 'Stack',
+    '@mui/material/Grid': 'Grid',
+    '@mui/material/Box': 'Box',
+    '@mui/material/Typography': 'Typography'
+  })('src/renderer/src/components/EncodeButton.tsx')
+  const previousWindow = globalThis.window
+  globalThis.window = { myAPI: { startFfmpeg: async (options) => calls.push(options) } }
+  try {
+    for (const selection of [...invalidSelections, {}]) {
+      const { inputFileList, ...encodeOptions } = { ...batchOptions, ...selection }
+      const tree = EncodeButton({ inputFileList, encodeOptions })
+      const [message, buttons] = tree.props.children
+      const encode = buttons.props.children[0].props.children
+      const invalid = Object.keys(selection).length > 0
+      assert.equal(encode.props.disabled, invalid)
+      assert.equal(Boolean(message), invalid)
+      await encode.props.onClick()
+      assert.equal(calls.length, invalid ? 0 : 1)
+    }
+    assert.deepEqual(calls[0], batchOptions)
+  } finally {
+    if (previousWindow === undefined) delete globalThis.window
+    else globalThis.window = previousWindow
+  }
+})
+
+test('bundled FFmpeg preserves a file created after the batch existence check', async () => {
+  const folder = mkdtempSync(join(tmpdir(), 'ffmpeg-overwrite-test-'))
+  const ffmpegPath = require('ffmpeg-static')
+  const inputFilePath = join(folder, 'input.mp4')
+  const outputFilePath = join(folder, 'input_converted.mp4')
+  const original = Buffer.from('existing output must be preserved')
+  try {
+    execFileSync(
+      ffmpegPath,
+      [
+        '-hide_banner',
+        '-loglevel',
+        'error',
+        '-f',
+        'lavfi',
+        '-i',
+        'testsrc2=size=32x32:rate=1',
+        '-t',
+        '1',
+        '-c:v',
+        'libx264',
+        inputFilePath
+      ],
+      { timeout: 10000 }
+    )
+    let checked = false
+    const { runFfmpegBatch } = sourceLoader({
+      fs: {
+        existsSync: () => {
+          checked = true
+          return false
+        }
+      },
+      child_process: {
+        spawn: (...args) => {
+          assert.equal(checked, true)
+          assert.equal(args[1].at(-1), outputFilePath)
+          assert.ok(args[1].includes('-n'))
+          writeFileSync(outputFilePath, original)
+          return spawn(...args)
+        }
+      }
+    })('src/main/ffmpeg/runFfmpegBatch.ts')
+    const results = await runFfmpegBatch(
+      {
+        ...batchOptions,
+        inputFileList: [inputFilePath],
+        outputFolder: folder,
+        suffix: '_converted'
+      },
+      {
+        signal: AbortSignal.timeout(10000),
+        onLog: () => {},
+        onStatus: () => {},
+        onProgress: () => {}
+      }
+    )
+    assert.equal(results[0].success, false)
+    assert.match(
+      results[0].errorMessage,
+      /already exists|Not overwriting|exiting|Error opening output/i
+    )
+    assert.deepEqual(readFileSync(outputFilePath), original)
+    assert.ok(readFileSync(inputFilePath).length > 0)
+  } finally {
+    rmSync(folder, { recursive: true, force: true })
+  }
+})
 
 test('progress survives every chunk boundary in duration and elapsed timestamps', () => {
   const { FfmpegProgressParser } = sourceLoader()('src/main/ffmpeg/parseFfmpegProgress.ts')
@@ -148,6 +296,22 @@ test('large stderr retains the final diagnostic across chunks without an unbound
   child.stderr.write('nostic\n')
   child.emit('close', 1)
   await rejected
+})
+
+test('overwrite refusal is a failure even when FFmpeg exits with code zero', async () => {
+  for (const diagnostic of [
+    "File '/output.mp4' already exists. Exiting.\nError opening output file /output.mp4.\n",
+    "File '/output.mp4' already exists. Not overwriting - exiting\n"
+  ]) {
+    const child = childProcess()
+    const logs = []
+    const done = runner(child).runFfmpeg({ ...options, onLog: (message) => logs.push(message) })
+    const rejected = assert.rejects(done, /Error opening output|Not overwriting/)
+    child.stderr.write(diagnostic)
+    child.emit('close', 0)
+    await rejected
+    assert.deepEqual(logs, [])
+  }
 })
 
 test('stop sends q, waits for close, and treats exit code 0 as cancelled', async () => {
